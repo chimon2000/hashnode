@@ -2,28 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hashnode/story/story.dart';
 
-const query = '''
-{
-  storiesFeed{
-    cuid,
-    title,
-    brief,
-    dateAdded
-  }
-}
-''';
+const queries = {
+  StoryListType.featured: '''
+    {
+      featuredStories {
+        cuid,
+        title,
+        brief,
+        dateAdded
+      }
+    }
+  ''',
+  StoryListType.recent: '''
+    {
+      recentStories {
+        cuid,
+        title,
+        brief,
+        dateAdded
+      }
+    }
+  ''',
+  StoryListType.trending: '''
+    {
+      trendingStories {
+        cuid,
+        title,
+        brief,
+        dateAdded
+      }
+    }
+  '''
+};
+
+enum StoryListType { featured, recent, trending }
 
 typedef BuilderFn = Widget Function(BuildContext context, List<Story> stories);
 
 class StoryQuery extends StatelessWidget {
   final BuilderFn builder;
+  final StoryListType listType;
 
   StoryQuery({
     @required this.builder,
+    @required this.listType,
   });
 
   @override
   Widget build(BuildContext context) {
+    final query = queries[listType];
     return Query(
       options: QueryOptions(document: query),
       builder: (result, {refetch}) {
@@ -34,7 +61,12 @@ class StoryQuery extends StatelessWidget {
         if (result.loading) {
           return Center(child: CircularProgressIndicator());
         }
-        final List<Object> storiesFeed = result.data['storiesFeed'];
+
+        final typeKey = listType == StoryListType.featured
+            ? 'featured'
+            : listType == StoryListType.recent ? 'recent' : 'trending';
+
+        final List<Object> storiesFeed = result.data['${typeKey}Stories'];
 
         final stories =
             storiesFeed.map((story) => Story.fromJson(story)).toList();
@@ -88,7 +120,10 @@ class StoryTile extends StatelessWidget {
     var tileTitle = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(story.title),
+        Text(
+          story.title,
+          overflow: TextOverflow.ellipsis,
+        ),
         Text(
           story.timeAgo,
           style: textTheme.caption,
@@ -100,13 +135,16 @@ class StoryTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(story.brief),
+          Text(
+            story.brief,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );
 
     return ListTile(
-      // dense: true,
       title: tileTitle,
       subtitle: subTitle,
       onTap: () {

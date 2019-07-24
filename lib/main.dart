@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hashnode/client_provider.dart';
-import 'package:hashnode/story/story_detail_page.dart';
+import 'package:hashnode/providers/settings.dart';
 import 'package:hashnode/story/story_page.dart';
+import 'package:hashnode/story/story_query.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,16 +15,39 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ClientProvider(
-      uri: apiUri,
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          brightness: Brightness.light,
-          primaryColor: Colors.white,
-          scaffoldBackgroundColor: Colors.white,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          builder: (_) => Settings(),
         ),
-        home: HomePage(title: 'Hashnode'),
+      ],
+      child: Consumer<Settings>(
+        builder: (context, settings, _) {
+          return MaterialApp(
+            title: 'Flutter Demo',
+            theme: ThemeData(
+              brightness: Brightness.light,
+              primaryColor: Colors.white,
+              scaffoldBackgroundColor: Colors.white,
+            ),
+            home: ClientProvider(
+              uri: apiUri,
+              child: MaterialApp(
+                title: 'Flutter Demo',
+                theme: settings.theme == AppTheme.light
+                    ? ThemeData(
+                        brightness: Brightness.light,
+                        primaryColor: Colors.white,
+                        scaffoldBackgroundColor: Colors.white,
+                      )
+                    : ThemeData(
+                        brightness: Brightness.dark,
+                      ),
+                home: HomePage(title: 'Hashnode'),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -37,14 +62,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final controller = PageController(initialPage: 0);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        elevation: 0.0,
-      ),
-      body: StoryPage(),
+    final pageView = PageView(
+      controller: controller,
+      scrollDirection: Axis.horizontal,
+      children: <Widget>[
+        StoryPage(
+          listType: StoryListType.trending,
+          listTitle: 'Top stories',
+        ),
+        StoryPage(),
+        StoryPage(
+          listType: StoryListType.recent,
+          listTitle: 'Recent stories',
+        ),
+      ],
     );
+
+    return pageView;
   }
 }
