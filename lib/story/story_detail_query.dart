@@ -9,6 +9,9 @@ import 'package:html2md/html2md.dart' as html2md;
 const document = r'''
   query Post($cuid: String!) {
     post(cuid: $cuid){
+      author {
+        username
+      }
       title,
       brief,
       content,
@@ -84,11 +87,7 @@ class StoryDetail extends StatelessWidget {
         children: <Widget>[
           if (story.coverImage != null) Image.network(story.coverImage),
           Padding(
-            padding: EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              top: 16.0,
-            ),
+            padding: EdgeInsets.all(16),
             child: Text(
               '${story.title}',
               style: textTheme.headline,
