@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:hashnode/providers/settings.dart';
 import 'package:hashnode/story/story.dart';
+import 'package:provider/provider.dart';
 
 const queries = {
   StoryListType.featured: '''
@@ -116,6 +118,7 @@ class StoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
+    final settings = Provider.of<Settings>(context);
 
     var tileTitle = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,18 +134,20 @@ class StoryTile extends StatelessWidget {
       ],
     );
 
-    final subTitle = Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            story.brief,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
+    final subTitle = settings.displayDensity == DisplayDensity.comfortable
+        ? Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  story.brief,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          )
+        : null;
 
     return ListTile(
       title: tileTitle,
