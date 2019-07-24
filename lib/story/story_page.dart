@@ -19,6 +19,18 @@ class StoryPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(listTitle),
+        leading: Consumer<Settings>(
+          builder: (context, settings, _) {
+            return IconButton(
+              icon: Image(
+                image: settings.theme == AppTheme.dark
+                    ? AssetImage('images/hashnode_light_32.png')
+                    : AssetImage('images/hashnode_dark_32.png'),
+              ),
+              onPressed: () => settings.toggleTheme(),
+            );
+          },
+        ),
         actions: <Widget>[
           PopupMenuButton(
             onSelected: (value) {
