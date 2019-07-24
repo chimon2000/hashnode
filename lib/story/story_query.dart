@@ -168,6 +168,7 @@ class StoryTile extends StatelessWidget {
     return ListTile(
       title: tileTitle,
       subtitle: subTitle,
+      contentPadding: EdgeInsets.fromLTRB(8, 0, 16, 8),
       onTap: () {
         onStoryTap(story);
       },
