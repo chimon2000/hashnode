@@ -3,35 +3,51 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hashnode/providers/settings.dart';
 import 'package:hashnode/story/story.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 const queries = {
   StoryListType.featured: '''
     {
       featuredStories {
+        author {
+          username
+        }
         cuid,
         title,
         brief,
-        dateAdded
+        dateAdded,
+        totalReactions,
+        responseCount
       }
     }
   ''',
   StoryListType.recent: '''
     {
       recentStories {
+        author {
+          username
+        }
         cuid,
         title,
         brief,
-        dateAdded
+        dateAdded,
+        totalReactions,
+        responseCount
       }
     }
   ''',
   StoryListType.trending: '''
     {
       trendingStories {
+        author {
+          username
+        }
         cuid,
         title,
         brief,
-        dateAdded
+        dateAdded,
+        totalReactions,
+        responseCount
       }
     }
   '''
@@ -128,7 +144,7 @@ class StoryTile extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         Text(
-          story.timeAgo,
+          '${determineCaption(story)}',
           style: textTheme.caption,
         ),
       ],
@@ -157,4 +173,45 @@ class StoryTile extends StatelessWidget {
       },
     );
   }
+}
+
+String determineCaption(Story story) {
+  final reactions = Intl.plural(
+    story.totalReactions,
+    zero: '',
+    one: '${story.totalReactions} reaction',
+    many: '${story.totalReactions} reactions',
+    other: '${story.totalReactions} reactions',
+    name: 'reactions',
+    args: [story.totalReactions],
+  );
+
+  final comments = Intl.plural(
+    story.responseCount,
+    zero: '',
+    one: '${story.responseCount} comment',
+    many: '${story.responseCount} comments',
+    other: '${story.responseCount} comments',
+    name: 'comments',
+    args: [story.responseCount],
+  );
+
+  final strings = [
+    reactions,
+    comments,
+  ].where((row) => row.isNotEmpty).toList();
+
+  final totals = list(strings);
+
+  return 'by ${story.author} ${story.timeAgo} ${totals.isEmpty ? "" : ", $totals"}';
+}
+
+String list(List<String> values) {
+  return values.fold('', (String curr, next) {
+    final index = values.indexOf(next);
+    final total = values.length - 1;
+    if (curr.isEmpty) return next;
+
+    return index == total ? '$curr and $next' : '$curr, $next';
+  });
 }

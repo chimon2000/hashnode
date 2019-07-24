@@ -23,6 +23,7 @@ dependencies:
   flutter_markdown: ^0.2.0
   graphql_flutter: ^1.0.0
   timeago: ^2.0.17
+  intl: ^0.15.8
   flutter:
     sdk: flutter
 

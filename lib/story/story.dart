@@ -8,6 +8,9 @@ class Story {
   final String content;
   final String contentMarkdown;
   final String coverImage;
+  final int responseCount;
+  final int totalReactions;
+  final String author;
   final DateTime dateAdded;
 
   Story({
@@ -18,6 +21,9 @@ class Story {
     this.content,
     this.contentMarkdown,
     this.coverImage,
+    this.responseCount,
+    this.totalReactions,
+    this.author,
   });
 
   String get timeAgo {
@@ -25,14 +31,16 @@ class Story {
   }
 
   static Story fromJson(Map<String, dynamic> json) => Story(
-        cuid: json['cuid'],
-        brief: json['brief'],
-        title: json['title'],
-        content: json['content'],
-        contentMarkdown: json['contentMarkdown'],
-        coverImage: json['coverImage'],
-        dateAdded: DateTime.parse(
-          json['dateAdded'],
-        ),
-      );
+      cuid: json['cuid'],
+      brief: json['brief'],
+      title: json['title'],
+      content: json['content'],
+      contentMarkdown: json['contentMarkdown'],
+      coverImage: json['coverImage'],
+      dateAdded: DateTime.parse(
+        json['dateAdded'],
+      ),
+      responseCount: json['responseCount'],
+      totalReactions: json['totalReactions'],
+      author: json['author']['username']);
 }
