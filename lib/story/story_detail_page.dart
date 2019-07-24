@@ -9,7 +9,6 @@ class StoryDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hashnode'),
         elevation: 0.0,
       ),
       body: StoryDetailQuery(
