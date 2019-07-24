@@ -87,10 +87,17 @@ class StoryDetail extends StatelessWidget {
         children: <Widget>[
           if (story.coverImage != null) Image.network(story.coverImage),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.only(top: 16, left: 16, right: 16),
             child: Text(
               '${story.title}',
               style: textTheme.headline,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 16, left: 16, right: 16),
+            child: Text(
+              'by ${story.author}',
+              style: textTheme.subhead,
             ),
           ),
           Padding(
