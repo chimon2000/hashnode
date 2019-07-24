@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hashnode/story/story_detail_page.dart';
 import 'package:hashnode/story/story_query.dart';
 
 class StoryPage extends StatelessWidget {
@@ -9,7 +10,25 @@ class StoryPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Expanded(
-          child: StoryQuery(),
+          child: StoryQuery(
+            builder: (context, stories) {
+              return StoryList(
+                stories: stories,
+                onStoryTap: (story) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return StoryDetailPage(
+                          cuid: story.cuid,
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         )
       ],
     );

@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:html2md/html2md.dart' as html2md;
 
-const query = r'''
+const document = r'''
   query Post($cuid: String!) {
     post(cuid: $cuid){
       title,
@@ -19,15 +19,22 @@ const query = r'''
   }
 ''';
 
+typedef BuilderFn = Widget Function(BuildContext context, Story story);
+
 class StoryDetailQuery extends StatelessWidget {
   final String cuid;
-  StoryDetailQuery({@required this.cuid});
+  final BuilderFn builder;
+
+  StoryDetailQuery({
+    @required this.cuid,
+    @required this.builder,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Query(
       options: QueryOptions(
-        document: query,
+        document: document,
         variables: {'cuid': cuid},
       ),
       builder: (result, {refetch}) {
@@ -42,7 +49,7 @@ class StoryDetailQuery extends StatelessWidget {
 
         final story = Story.fromJson(post);
 
-        return StoryDetail(story: story);
+        return builder(context, story);
       },
     );
   }
@@ -77,7 +84,7 @@ class StoryDetail extends StatelessWidget {
         children: <Widget>[
           if (story.coverImage != null) Image.network(story.coverImage),
           Padding(
-            padding: const EdgeInsets.only(
+            padding: EdgeInsets.only(
               left: 16.0,
               right: 16.0,
               top: 16.0,
@@ -88,7 +95,7 @@ class StoryDetail extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(
+            padding: EdgeInsets.only(
               left: 16.0,
               right: 16.0,
               bottom: 16.0,

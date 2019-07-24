@@ -7,11 +7,19 @@ class StoryDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final TextTheme textTheme = theme.textTheme;
-
-    return StoryDetailQuery(
-      cuid: cuid,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Hashnode'),
+        elevation: 0.0,
+      ),
+      body: StoryDetailQuery(
+        cuid: cuid,
+        builder: (context, story) {
+          return StoryDetail(
+            story: story,
+          );
+        },
+      ),
     );
   }
 }

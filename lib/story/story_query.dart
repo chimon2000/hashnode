@@ -13,7 +13,15 @@ const query = '''
 }
 ''';
 
+typedef BuilderFn = Widget Function(BuildContext context, List<Story> stories);
+
 class StoryQuery extends StatelessWidget {
+  final BuilderFn builder;
+
+  StoryQuery({
+    @required this.builder,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Query(
@@ -31,17 +39,21 @@ class StoryQuery extends StatelessWidget {
         final stories =
             storiesFeed.map((story) => Story.fromJson(story)).toList();
 
-        return StoryList(stories: stories);
+        return builder(context, stories);
       },
     );
   }
 }
 
+typedef OnStoryTapFn = void Function(Story story);
+
 class StoryList extends StatelessWidget {
   final List<Story> stories;
+  final OnStoryTapFn onStoryTap;
 
   StoryList({
     @required this.stories,
+    @required this.onStoryTap,
   });
 
   @override
@@ -49,7 +61,11 @@ class StoryList extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.all(8.0),
       children: stories
-          .map((story) => Container(child: StoryTile(story: story)))
+          .map((story) => Container(
+                  child: StoryTile(
+                story: story,
+                onStoryTap: onStoryTap,
+              )))
           .toList(),
     );
   }
@@ -57,8 +73,11 @@ class StoryList extends StatelessWidget {
 
 class StoryTile extends StatelessWidget {
   final Story story;
+  final OnStoryTapFn onStoryTap;
+
   StoryTile({
     @required this.story,
+    @required this.onStoryTap,
   });
 
   @override
@@ -90,6 +109,9 @@ class StoryTile extends StatelessWidget {
       // dense: true,
       title: tileTitle,
       subtitle: subTitle,
+      onTap: () {
+        onStoryTap(story);
+      },
     );
   }
 }

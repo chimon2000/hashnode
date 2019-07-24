@@ -44,9 +44,7 @@ class _HomePageState extends State<HomePage> {
         title: Text(widget.title),
         elevation: 0.0,
       ),
-      body: StoryDetailPage(
-        cuid: 'cjyfyu1zj004lfts1r5tpr2pg',
-      ),
+      body: StoryPage(),
     );
   }
 }
