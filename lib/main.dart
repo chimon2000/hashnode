@@ -23,28 +23,20 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<Settings>(
         builder: (context, settings, _) {
-          return MaterialApp(
-            title: 'Flutter Demo',
-            theme: ThemeData(
-              brightness: Brightness.light,
-              primaryColor: Colors.white,
-              scaffoldBackgroundColor: Colors.white,
-            ),
-            home: ClientProvider(
-              uri: apiUri,
-              child: MaterialApp(
-                title: 'Flutter Demo',
-                theme: settings.theme == AppTheme.light
-                    ? ThemeData(
-                        brightness: Brightness.light,
-                        primaryColor: Colors.white,
-                        scaffoldBackgroundColor: Colors.white,
-                      )
-                    : ThemeData(
-                        brightness: Brightness.dark,
-                      ),
-                home: HomePage(title: 'Hashnode'),
+          return ClientProvider(
+            uri: apiUri,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: settings.theme == AppTheme.light
+                  ? ThemeData(
+                brightness: Brightness.light,
+                primaryColor: Colors.white,
+                scaffoldBackgroundColor: Colors.white,
+              )
+                  : ThemeData(
+                brightness: Brightness.dark,
               ),
+              home: HomePage(title: 'Hashnode'),
             ),
           );
         },
