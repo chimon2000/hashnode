@@ -55,7 +55,9 @@ const queries = {
 
 enum StoryListType { featured, recent, trending }
 
-typedef BuilderFn = Widget Function(BuildContext context, List<Story> stories);
+typedef BuilderFn = Widget Function(BuildContext context, List<Story> stories,
+    {RefetchFn refetch});
+typedef RefetchFn = bool Function();
 
 class StoryQuery extends StatelessWidget {
   final BuilderFn builder;
@@ -70,7 +72,10 @@ class StoryQuery extends StatelessWidget {
   Widget build(BuildContext context) {
     final query = queries[listType];
     return Query(
-      options: QueryOptions(document: query),
+      options: QueryOptions(
+        document: query,
+        pollInterval: 2000,
+      ),
       builder: (result, {refetch}) {
         if (result.errors != null) {
           return Text(result.errors.toString());
@@ -89,7 +94,7 @@ class StoryQuery extends StatelessWidget {
         final stories =
             storiesFeed.map((story) => Story.fromJson(story)).toList();
 
-        return builder(context, stories);
+        return builder(context, stories, refetch: refetch);
       },
     );
   }

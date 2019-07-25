@@ -79,21 +79,25 @@ class StoryPage extends StatelessWidget {
           Expanded(
             child: StoryQuery(
               listType: listType,
-              builder: (context, stories) {
-                return StoryList(
-                  stories: stories,
-                  onStoryTap: (story) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return StoryDetailPage(
-                            cuid: story.cuid,
-                          );
-                        },
-                      ),
-                    );
-                  },
+              builder: (context, stories, {refetch}) {
+                return RefreshIndicator(
+                  child: StoryList(
+                    stories: stories,
+                    onStoryTap: (story) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return StoryDetailPage(
+                              cuid: story.cuid,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                  onRefresh: () async =>
+                      Future.delayed(Duration(seconds: 1), refetch),
                 );
               },
             ),

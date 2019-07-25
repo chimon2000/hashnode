@@ -22,7 +22,9 @@ const document = r'''
   }
 ''';
 
-typedef BuilderFn = Widget Function(BuildContext context, Story story);
+typedef BuilderFn = Widget Function(BuildContext context, Story story,
+    {RefetchFn refetch});
+typedef RefetchFn = bool Function();
 
 class StoryDetailQuery extends StatelessWidget {
   final String cuid;
@@ -39,6 +41,7 @@ class StoryDetailQuery extends StatelessWidget {
       options: QueryOptions(
         document: document,
         variables: {'cuid': cuid},
+        pollInterval: 5000,
       ),
       builder: (result, {refetch}) {
         if (result.errors != null) {
@@ -52,7 +55,7 @@ class StoryDetailQuery extends StatelessWidget {
 
         final story = Story.fromJson(post);
 
-        return builder(context, story);
+        return builder(context, story, refetch: refetch);
       },
     );
   }

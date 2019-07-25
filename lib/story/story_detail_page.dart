@@ -13,9 +13,13 @@ class StoryDetailPage extends StatelessWidget {
       ),
       body: StoryDetailQuery(
         cuid: cuid,
-        builder: (context, story) {
-          return StoryDetail(
-            story: story,
+        builder: (context, story, {refetch}) {
+          return RefreshIndicator(
+            child: StoryDetail(
+              story: story,
+            ),
+            onRefresh: () async =>
+                Future.delayed(Duration(seconds: 1), refetch),
           );
         },
       ),
