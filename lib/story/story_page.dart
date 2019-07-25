@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hashnode/about/about_page.dart';
 import 'package:hashnode/providers/settings.dart';
 import 'package:hashnode/story/story_detail_page.dart';
 import 'package:hashnode/story/story_query.dart';
@@ -41,6 +42,17 @@ class StoryPage extends StatelessWidget {
               if (value is DisplayDensity) {
                 settings.setDisplayDensity(value);
               }
+
+              if (value == 'about') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return AboutPage();
+                    },
+                  ),
+                );
+              }
             },
             itemBuilder: (context) {
               final settings = Provider.of<Settings>(context);
@@ -65,6 +77,10 @@ class StoryPage extends StatelessWidget {
                       ? DisplayDensity.compact
                       : DisplayDensity.comfortable,
                   child: Text(displayDensityText),
+                ),
+                PopupMenuItem<String>(
+                  value: 'about',
+                  child: Text('About'),
                 ),
               ];
             },
