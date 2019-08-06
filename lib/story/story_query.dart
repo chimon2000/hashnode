@@ -5,58 +5,33 @@ import 'package:hashnode/story/story.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-const queries = {
-  StoryListType.featured: '''
-    {
-      featuredStories {
-        author {
-          username
-        }
-        cuid,
-        title,
-        brief,
-        dateAdded,
-        totalReactions,
-        responseCount
+const query = r'''
+  query Stories($type: FeedType!, $page: Int) {
+    storiesFeed(type: $type, page: $page){
+      author {
+        username
       }
+      cuid,
+      title,
+      brief,
+      dateAdded,
+      totalReactions,
+      responseCount
     }
-  ''',
-  StoryListType.recent: '''
-    {
-      recentStories {
-        author {
-          username
-        }
-        cuid,
-        title,
-        brief,
-        dateAdded,
-        totalReactions,
-        responseCount
-      }
-    }
-  ''',
-  StoryListType.trending: '''
-    {
-      trendingStories {
-        author {
-          username
-        }
-        cuid,
-        title,
-        brief,
-        dateAdded,
-        totalReactions,
-        responseCount
-      }
-    }
-  '''
+  }
+''';
+
+const storyTypeMap = {
+  StoryListType.featured: 'FEATURED',
+  StoryListType.recent: 'RECENT',
+  StoryListType.trending: 'GLOBAL'
 };
 
 enum StoryListType { featured, recent, trending }
 
 typedef BuilderFn = Widget Function(BuildContext context, List<Story> stories,
-    {RefetchFn refetch});
+    {RefetchFn refetch, Function(FetchMoreOptions) fetchMore});
+
 typedef RefetchFn = bool Function();
 
 class StoryQuery extends StatelessWidget {
@@ -70,31 +45,32 @@ class StoryQuery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final query = queries[listType];
     return Query(
       options: QueryOptions(
         document: query,
+        variables: {'type': storyTypeMap[listType], 'page': 0},
         pollInterval: 2000,
       ),
-      builder: (result, {refetch}) {
+      builder: (result, {refetch, fetchMore}) {
         if (result.errors != null) {
           return Text(result.errors.toString());
         }
 
-        if (result.loading) {
+        if (result.loading && result.data == null) {
           return Center(child: CircularProgressIndicator());
         }
 
-        final typeKey = listType == StoryListType.featured
-            ? 'featured'
-            : listType == StoryListType.recent ? 'recent' : 'trending';
-
-        final List<Object> storiesFeed = result.data['${typeKey}Stories'];
+        final List<Object> storiesFeed = result.data['storiesFeed'];
 
         final stories =
             storiesFeed.map((story) => Story.fromJson(story)).toList();
 
-        return builder(context, stories, refetch: refetch);
+        return builder(
+          context,
+          stories,
+          refetch: refetch,
+          fetchMore: fetchMore,
+        );
       },
     );
   }
@@ -105,23 +81,34 @@ typedef OnStoryTapFn = void Function(Story story);
 class StoryList extends StatelessWidget {
   final List<Story> stories;
   final OnStoryTapFn onStoryTap;
+  final bool isFetchingMore;
+  final VoidCallback onFetchMore;
 
-  StoryList({
-    @required this.stories,
-    @required this.onStoryTap,
-  });
+  StoryList(
+      {@required this.stories,
+      @required this.onStoryTap,
+      this.isFetchingMore = false,
+      this.onFetchMore});
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: EdgeInsets.all(8.0),
-      children: stories
-          .map((story) => Container(
-                  child: StoryTile(
-                story: story,
-                onStoryTap: onStoryTap,
-              )))
-          .toList(),
+      children: [
+        ...stories
+            .map((story) => Container(
+                    child: StoryTile(
+                  story: story,
+                  onStoryTap: onStoryTap,
+                )))
+            .toList(),
+        Center(
+          child: FlatButton(
+            child: Text('Load more...'),
+            onPressed: isFetchingMore ? null : onFetchMore,
+          ),
+        )
+      ],
     );
   }
 }

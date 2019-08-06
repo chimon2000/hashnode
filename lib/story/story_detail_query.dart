@@ -43,7 +43,7 @@ class StoryDetailQuery extends StatelessWidget {
         variables: {'cuid': cuid},
         pollInterval: 5000,
       ),
-      builder: (result, {refetch}) {
+      builder: (result, {refetch, fetchMore}) {
         if (result.errors != null) {
           return Text(result.errors.toString());
         }
