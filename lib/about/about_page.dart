@@ -32,6 +32,7 @@ class AboutPage extends StatelessWidget {
     return new Scaffold(
       appBar: new AppBar(
         title: const Text('About'),
+        elevation: 0,
       ),
       body: ListView(
         children: <Widget>[
