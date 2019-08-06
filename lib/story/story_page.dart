@@ -4,8 +4,9 @@ import 'package:hashnode/providers/settings.dart';
 import 'package:hashnode/story/story_detail_page.dart';
 import 'package:hashnode/story/story_query.dart';
 import 'package:provider/provider.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
-class StoryPage extends StatelessWidget {
+class StoryPage extends StatefulWidget {
   final StoryListType listType;
   final String listTitle;
 
@@ -15,11 +16,18 @@ class StoryPage extends StatelessWidget {
   });
 
   @override
+  _StoryPageState createState() => _StoryPageState();
+}
+
+class _StoryPageState extends State<StoryPage> {
+  bool isFetchingMore = false;
+
+  @override
   Widget build(BuildContext context) {
     final settings = Provider.of<Settings>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text(listTitle),
+        title: Text(widget.listTitle),
         leading: Consumer<Settings>(
           builder: (context, settings, _) {
             return IconButton(
@@ -88,17 +96,30 @@ class StoryPage extends StatelessWidget {
         ],
         elevation: 0.0,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: StoryQuery(
-              listType: listType,
-              builder: (context, stories, {refetch}) {
-                return RefreshIndicator(
+      body: StoryQuery(
+        listType: widget.listType,
+        builder: (context, stories, {refetch, fetchMore}) {
+          return RefreshIndicator(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
                   child: StoryList(
                     stories: stories,
+                    isFetchingMore: isFetchingMore,
+                    onFetchMore: () async {
+                      final options = buildFetchMoreOpts(page: 1);
+                      setState(() {
+                        isFetchingMore = true;
+                      });
+
+                      await fetchMore(options);
+
+                      setState(() {
+                        isFetchingMore = false;
+                      });
+                    },
                     onStoryTap: (story) {
                       Navigator.push(
                         context,
@@ -112,14 +133,32 @@ class StoryPage extends StatelessWidget {
                       );
                     },
                   ),
-                  onRefresh: () async =>
-                      Future.delayed(Duration(seconds: 1), refetch),
-                );
-              },
+                ),
+              ],
             ),
-          )
-        ],
+            onRefresh: () async =>
+                Future.delayed(Duration(seconds: 1), refetch),
+          );
+        },
       ),
     );
   }
+}
+
+FetchMoreOptions buildFetchMoreOpts({page = 1}) {
+  FetchMoreOptions options = FetchMoreOptions(
+    variables: {'page': page},
+    updateQuery: (previousResultData, fetchMoreResultData) {
+      final List<Object> repos = [
+        ...previousResultData.data['storiesFeed'] as List<Object>,
+        ...fetchMoreResultData.data['storiesFeed'] as List<Object>
+      ];
+
+      fetchMoreResultData['storiesFeed'] = repos;
+
+      return fetchMoreResultData;
+    },
+  );
+
+  return options;
 }
