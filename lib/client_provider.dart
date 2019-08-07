@@ -18,7 +18,7 @@ class ClientProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return GraphQLProvider(
       client: client,
-      child: CacheProvider(child: child),
+      child: child,
     );
   }
 }
