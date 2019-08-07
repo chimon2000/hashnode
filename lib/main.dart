@@ -29,13 +29,13 @@ class MyApp extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               theme: settings.theme == AppTheme.light
                   ? ThemeData(
-                brightness: Brightness.light,
-                primaryColor: Colors.white,
-                scaffoldBackgroundColor: Colors.white,
-              )
+                      brightness: Brightness.light,
+                      primaryColor: Colors.white,
+                      scaffoldBackgroundColor: Colors.white,
+                    )
                   : ThemeData(
-                brightness: Brightness.dark,
-              ),
+                      brightness: Brightness.dark,
+                    ),
               home: HomePage(title: 'Hashnode'),
             ),
           );
@@ -63,11 +63,15 @@ class _HomePageState extends State<HomePage> {
       scrollDirection: Axis.horizontal,
       children: <Widget>[
         StoryPage(
+          key: const PageStorageKey<String>('trending'),
           listType: StoryListType.trending,
           listTitle: 'Top stories',
         ),
-        StoryPage(),
         StoryPage(
+          key: const PageStorageKey<String>('featured'),
+        ),
+        StoryPage(
+          key: const PageStorageKey<String>('recent'),
           listType: StoryListType.recent,
           listTitle: 'Recent stories',
         ),
