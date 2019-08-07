@@ -11,9 +11,10 @@ class StoryPage extends StatefulWidget {
   final String listTitle;
 
   StoryPage({
+    Key key,
     this.listType = StoryListType.featured,
     this.listTitle = 'Featured stories',
-  });
+  }) : super(key: key);
 
   @override
   _StoryPageState createState() => _StoryPageState();
