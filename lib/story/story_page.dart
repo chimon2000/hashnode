@@ -21,6 +21,7 @@ class StoryPage extends StatefulWidget {
 
 class _StoryPageState extends State<StoryPage> {
   bool isFetchingMore = false;
+  int nextPage = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +110,7 @@ class _StoryPageState extends State<StoryPage> {
                     stories: stories,
                     isFetchingMore: isFetchingMore,
                     onFetchMore: () async {
-                      final options = buildFetchMoreOpts(page: 1);
+                      final options = buildFetchMoreOpts(page: nextPage);
                       setState(() {
                         isFetchingMore = true;
                       });
@@ -118,6 +119,7 @@ class _StoryPageState extends State<StoryPage> {
 
                       setState(() {
                         isFetchingMore = false;
+                        nextPage = nextPage + 2;
                       });
                     },
                     onStoryTap: (story) {
@@ -145,16 +147,21 @@ class _StoryPageState extends State<StoryPage> {
   }
 }
 
-FetchMoreOptions buildFetchMoreOpts({page = 1}) {
+FetchMoreOptions buildFetchMoreOpts({page = 2}) {
   FetchMoreOptions options = FetchMoreOptions(
-    variables: {'page': page},
+    variables: {'currentPage': page, 'nextPage': page + 1},
     updateQuery: (previousResultData, fetchMoreResultData) {
-      final List<Object> repos = [
-        ...previousResultData.data['storiesFeed'] as List<Object>,
-        ...fetchMoreResultData.data['storiesFeed'] as List<Object>
+      final List<Object> currentPage = [
+        ...previousResultData.data['current'] as List<Object>,
+        ...previousResultData.data['next'] as List<Object>,
+      ];
+      final List<Object> nextPage = [
+        ...fetchMoreResultData.data['current'] as List<Object>,
+        ...fetchMoreResultData.data['next'] as List<Object>,
       ];
 
-      fetchMoreResultData['storiesFeed'] = repos;
+      fetchMoreResultData['current'] = currentPage;
+      fetchMoreResultData['next'] = nextPage;
 
       return fetchMoreResultData;
     },

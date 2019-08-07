@@ -6,8 +6,19 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 const query = r'''
-  query Stories($type: FeedType!, $page: Int) {
-    storiesFeed(type: $type, page: $page){
+  query Stories($type: FeedType!, $currentPage: Int, $nextPage: Int) {
+    current: storiesFeed(type: $type, page: $currentPage){
+      author {
+        username
+      }
+      cuid,
+      title,
+      brief,
+      dateAdded,
+      totalReactions,
+      responseCount
+    }
+    next: storiesFeed(type: $type, page: $nextPage){
       author {
         username
       }
@@ -48,7 +59,11 @@ class StoryQuery extends StatelessWidget {
     return Query(
       options: QueryOptions(
         document: query,
-        variables: {'type': storyTypeMap[listType], 'page': 0},
+        variables: {
+          'type': storyTypeMap[listType],
+          'currentPage': 0,
+          'nextPage': 1
+        },
         pollInterval: 2000,
       ),
       builder: (result, {refetch, fetchMore}) {
@@ -60,7 +75,10 @@ class StoryQuery extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         }
 
-        final List<Object> storiesFeed = result.data['storiesFeed'];
+        final List<Object> storiesFeed = [
+          ...result.data['current'],
+          ...result.data['next']
+        ];
 
         final stories =
             storiesFeed.map((story) => Story.fromJson(story)).toList();
