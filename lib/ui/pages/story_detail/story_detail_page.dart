@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hashnode/pages/story_detail/story_detail_query.dart';
+import 'package:hashnode/ui/pages/story_detail/story_detail_query.dart';
 
 class StoryDetailPage extends StatelessWidget {
   final String cuid;

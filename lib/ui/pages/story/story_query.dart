@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:hashnode/providers/settings.dart';
-import 'package:hashnode/story/story.dart';
+import 'package:hashnode/core/models/story.dart';
+import 'package:hashnode/core/providers/settings.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 

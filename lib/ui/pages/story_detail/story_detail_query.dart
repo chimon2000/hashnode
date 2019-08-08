@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:hashnode/story/story.dart';
+import 'package:hashnode/core/models/story.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:html2md/html2md.dart' as html2md;

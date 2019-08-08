@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hashnode/pages/home/home.dart';
-import 'package:hashnode/providers/client_provider.dart';
-import 'package:hashnode/providers/settings.dart';
+import 'package:hashnode/core/providers/client_provider.dart';
+import 'package:hashnode/core/providers/settings.dart';
+import 'package:hashnode/ui/pages/home/home.dart';
 import 'package:provider/provider.dart';
 
 final String apiUri = 'https://api.hashnode.com';

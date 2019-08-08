@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hashnode/app.dart';
-import 'package:hashnode/util/config.dart';
+import 'package:hashnode/core/util/config.dart';
 import 'package:catcher/catcher_plugin.dart';
-import 'dart:async';
 
 Future main() async {
   await setupConfig();
