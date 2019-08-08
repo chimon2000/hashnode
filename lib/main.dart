@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hashnode/client_provider.dart';
+import 'package:hashnode/providers/client_provider.dart';
 import 'package:hashnode/providers/settings.dart';
 import 'package:hashnode/story/story_page.dart';
 import 'package:hashnode/story/story_query.dart';
@@ -63,15 +63,11 @@ class _HomePageState extends State<HomePage> {
       scrollDirection: Axis.horizontal,
       children: <Widget>[
         StoryPage(
-          key: const PageStorageKey<String>('trending'),
           listType: StoryListType.trending,
           listTitle: 'Top stories',
         ),
+        StoryPage(),
         StoryPage(
-          key: const PageStorageKey<String>('featured'),
-        ),
-        StoryPage(
-          key: const PageStorageKey<String>('recent'),
           listType: StoryListType.recent,
           listTitle: 'Recent stories',
         ),
