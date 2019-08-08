@@ -74,3 +74,4 @@
 **/developer_key.jks
 **/key.properties
 bin/
+.env

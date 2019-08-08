@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hashnode/about/about_page.dart';
+import 'package:hashnode/pages/story/story_query.dart';
+import 'package:hashnode/pages/story_detail/story_detail_page.dart';
 import 'package:hashnode/providers/settings.dart';
-import 'package:hashnode/story/story_detail_page.dart';
-import 'package:hashnode/story/story_query.dart';
 import 'package:provider/provider.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
