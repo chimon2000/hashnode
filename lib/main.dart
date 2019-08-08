@@ -6,8 +6,9 @@ import 'dart:async';
 
 Future main() async {
   await setupConfig();
-  final dns = DotEnv().env['DNS'];
-  final sentryHandler = SentryHandler(dns);
+  final dsn = DotEnv().env['DSN'];
+
+  final sentryHandler = SentryHandler(dsn);
   final consoleHandler = ConsoleHandler();
 
   CatcherOptions debugOptions =
