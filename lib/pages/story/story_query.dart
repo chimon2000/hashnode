@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 const query = r'''
   query Stories($type: FeedType!, $currentPage: Int, $nextPage: Int) {
     current: storiesFeed(type: $type, page: $currentPage){
+      __typename
+      id: cuid
       author {
         username
       }
@@ -19,6 +21,8 @@ const query = r'''
       responseCount
     }
     next: storiesFeed(type: $type, page: $nextPage){
+      __typename
+      id: cuid
       author {
         username
       }

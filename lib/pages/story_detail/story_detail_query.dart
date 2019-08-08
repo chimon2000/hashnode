@@ -9,6 +9,8 @@ import 'package:html2md/html2md.dart' as html2md;
 const document = r'''
   query Post($cuid: String!) {
     post(cuid: $cuid){
+      __typename
+      id: cuid
       author {
         username
       }
