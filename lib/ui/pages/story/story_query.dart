@@ -166,6 +166,7 @@ class StoryTile extends StatelessWidget {
 
     final subTitle = settings.displayDensity == DisplayDensity.comfortable
         ? Container(
+            padding: EdgeInsets.symmetric(vertical: 5.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
