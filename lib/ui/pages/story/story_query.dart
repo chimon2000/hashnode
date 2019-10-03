@@ -72,16 +72,13 @@ class StoryQuery extends StatelessWidget {
       ),
       builder: (result, {refetch, fetchMore}) {
         if (result.errors != null) {
-          // illustration by Ouch.pics https://icons8.com
           return new Center(
               child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Expanded(
                   flex: 1,
                   child: Container(
                     alignment: Alignment.center,
-                    // margin: EdgeInsets.only(top: 20.0, bottom: 10.0),
                     child: new Text('Could not find stories',
                         style: new TextStyle(
                           fontWeight: FontWeight.bold,
@@ -92,16 +89,8 @@ class StoryQuery extends StatelessWidget {
                   flex: 4,
                   child: Container(
                     alignment: Alignment.topCenter,
-                    // margin: EdgeInsets.only(left: 20.0, right: 10.0),
+                    // illustration by Ouch.pics https://icons8.com
                     child: Image.asset('images/mirage-page-not-found.png'),
-                    // fit: BoxFit.contain,
-                    // height: 500,
-                    // decoration: BoxDecoration(
-                    //   image: DecorationImage(
-                    //     fit: BoxFit.contain,
-                    //     image: AssetImage('images/mirage-page-not-found.png'),
-                    //   ),
-                    // ),
                   )),
               Expanded(
                   flex: 1,
@@ -109,7 +98,6 @@ class StoryQuery extends StatelessWidget {
                       /* Flexible spacer to keep image centered but yet scalable */)),
             ],
           ));
-          // return Image.asset('images/mirage-page-not-found.png');
           // return Text('Could not find Stories: \n' + result.errors.toString());
 
         }
