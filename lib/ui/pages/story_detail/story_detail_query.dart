@@ -75,8 +75,13 @@ class StoryDetail extends StatelessWidget {
     final TextTheme textTheme = theme.textTheme;
     String markdown = html2md.convert(story.content);
 
+    final customMarkdownStyleSheet = MarkdownStyleSheet
+        .fromTheme(theme)
+        .copyWith(p: textTheme.body1.copyWith(fontSize: 15));
+
     final content = MarkdownBody(
       data: markdown,
+      styleSheet: customMarkdownStyleSheet,
       onTapLink: (link) async {
         if (await canLaunch(link)) {
           await launch(link);
