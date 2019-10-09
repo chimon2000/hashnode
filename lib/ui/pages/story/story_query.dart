@@ -79,7 +79,7 @@ class StoryQuery extends StatelessWidget {
                   flex: 1,
                   child: Container(
                     alignment: Alignment.center,
-                    child: new Text('Could not find stories',
+                    child: new Text('Could not find stories...',
                         style: new TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
@@ -95,7 +95,15 @@ class StoryQuery extends StatelessWidget {
               Expanded(
                   flex: 1,
                   child: Container(
-                      /* Flexible spacer to keep image centered but yet scalable */)),
+                    alignment: Alignment.topCenter,
+                    child:
+                        new Text('illustration by Ouch.pics https://icons8.com',
+                            style: new TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black45,
+                              fontSize: 14.0,
+                            )),
+                  )),
             ],
           ));
           // return Text('Could not find Stories: \n' + result.errors.toString());
