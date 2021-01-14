@@ -72,7 +72,42 @@ class StoryQuery extends StatelessWidget {
       ),
       builder: (result, {refetch, fetchMore}) {
         if (result.errors != null) {
-          return Text(result.errors.toString());
+          return new Center(
+              child: Column(
+            children: <Widget>[
+              Expanded(
+                  flex: 1,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: new Text('Could not find stories...',
+                        style: new TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                        )),
+                  )),
+              Expanded(
+                  flex: 4,
+                  child: Container(
+                    alignment: Alignment.topCenter,
+                    // illustration by Ouch.pics https://icons8.com
+                    child: Image.asset('images/mirage-page-not-found.png'),
+                  )),
+              Expanded(
+                  flex: 1,
+                  child: Container(
+                    alignment: Alignment.topCenter,
+                    child:
+                        new Text('illustration by Ouch.pics https://icons8.com',
+                            style: new TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black45,
+                              fontSize: 14.0,
+                            )),
+                  )),
+            ],
+          ));
+          // return Text('Could not find Stories: \n' + result.errors.toString());
+
         }
 
         if (result.loading && result.data == null) {
