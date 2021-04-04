@@ -75,3 +75,4 @@
 **/key.properties
 bin/
 .env
+.flutter-plugins-dependencies
