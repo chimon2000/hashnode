@@ -129,7 +129,8 @@ class _StoryPageState extends State<StoryPage> {
                         MaterialPageRoute(
                           builder: (context) {
                             return StoryDetailPage(
-                              cuid: story.cuid,
+                              slug: story.slug,
+                              hostname: story.hostname,
                             );
                           },
                         ),
@@ -153,12 +154,12 @@ FetchMoreOptions buildFetchMoreOpts({page = 2}) {
     variables: {'currentPage': page, 'nextPage': page + 1},
     updateQuery: (previousResultData, fetchMoreResultData) {
       final List<Object> currentPage = [
-        ...previousResultData.data['current'] as List<Object>,
-        ...previousResultData.data['next'] as List<Object>,
+        ...previousResultData['current'] as List<Object>,
+        ...previousResultData['next'] as List<Object>,
       ];
       final List<Object> nextPage = [
-        ...fetchMoreResultData.data['current'] as List<Object>,
-        ...fetchMoreResultData.data['next'] as List<Object>,
+        ...fetchMoreResultData['current'] as List<Object>,
+        ...fetchMoreResultData['next'] as List<Object>,
       ];
 
       fetchMoreResultData['current'] = currentPage;

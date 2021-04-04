@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hashnode/ui/pages/story_detail/story_detail_query.dart';
 
 class StoryDetailPage extends StatelessWidget {
-  final String cuid;
-  StoryDetailPage({@required this.cuid});
+  final String slug;
+  final String hostname;
+
+  StoryDetailPage({@required this.slug, this.hostname});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,8 @@ class StoryDetailPage extends StatelessWidget {
         elevation: 0.0,
       ),
       body: StoryDetailQuery(
-        cuid: cuid,
+        slug: slug,
+        hostname: hostname,
         builder: (context, story, {refetch}) {
           return RefreshIndicator(
             child: StoryDetail(

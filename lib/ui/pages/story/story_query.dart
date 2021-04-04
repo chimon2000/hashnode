@@ -12,12 +12,14 @@ const query = r'''
       id: cuid
       author {
         username
+        publicationDomain
       }
-      cuid,
-      title,
-      brief,
-      dateAdded,
-      totalReactions,
+      slug
+      cuid
+      title
+      brief
+      dateAdded
+      totalReactions
       responseCount
     }
     next: storiesFeed(type: $type, page: $nextPage){
@@ -25,12 +27,14 @@ const query = r'''
       id: cuid
       author {
         username
+        publicationDomain
       }
-      cuid,
-      title,
-      brief,
-      dateAdded,
-      totalReactions,
+      slug
+      cuid
+      title
+      brief
+      dateAdded
+      totalReactions
       responseCount
     }
   }
@@ -39,15 +43,13 @@ const query = r'''
 const storyTypeMap = {
   StoryListType.featured: 'FEATURED',
   StoryListType.recent: 'RECENT',
-  StoryListType.trending: 'GLOBAL'
+  StoryListType.trending: 'BEST'
 };
 
 enum StoryListType { featured, recent, trending }
 
 typedef BuilderFn = Widget Function(BuildContext context, List<Story> stories,
-    {RefetchFn refetch, Function(FetchMoreOptions) fetchMore});
-
-typedef RefetchFn = bool Function();
+    {Refetch refetch, Function(FetchMoreOptions) fetchMore});
 
 class StoryQuery extends StatelessWidget {
   final BuilderFn builder;
@@ -62,29 +64,32 @@ class StoryQuery extends StatelessWidget {
   Widget build(BuildContext context) {
     return Query(
       options: QueryOptions(
-        document: query,
+        document: gql(query),
         variables: {
           'type': storyTypeMap[listType],
           'currentPage': 0,
           'nextPage': 1
         },
-        pollInterval: 2000,
+        pollInterval: Duration(seconds: 2),
       ),
       builder: (result, {refetch, fetchMore}) {
-        if (result.errors != null) {
+        if (result.hasException) {
           return new Center(
               child: Column(
             children: <Widget>[
               Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: new Text('Could not find stories...',
-                        style: new TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
-                        )),
-                  )),
+                flex: 1,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: new Text(
+                    'Could not find stories...',
+                    style: new TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                   flex: 4,
                   child: Container(
@@ -110,7 +115,7 @@ class StoryQuery extends StatelessWidget {
 
         }
 
-        if (result.loading && result.data == null) {
+        if (result.isLoading && result.data == null) {
           return Center(child: CircularProgressIndicator());
         }
 
@@ -118,6 +123,8 @@ class StoryQuery extends StatelessWidget {
           ...result.data['current'],
           ...result.data['next']
         ];
+
+        print(storiesFeed[5]);
 
         final stories =
             storiesFeed.map((story) => Story.fromJson(story)).toList();
@@ -160,7 +167,7 @@ class StoryList extends StatelessWidget {
                 )))
             .toList(),
         Center(
-          child: FlatButton(
+          child: TextButton(
             child: Text('Load more...'),
             onPressed: isFetchingMore ? null : onFetchMore,
           ),
@@ -257,12 +264,6 @@ String determineCaption(Story story) {
   return 'by ${story.author} ${story.timeAgo} ${totals.isEmpty ? "" : ", $totals"}';
 }
 
-String list(List<String> values) {
-  return values.fold('', (String curr, next) {
-    final index = values.indexOf(next);
-    final total = values.length - 1;
-    if (curr.isEmpty) return next;
-
-    return index == total ? '$curr and $next' : '$curr, $next';
-  });
+String list([List<String> values = const []]) {
+  return '';
 }
