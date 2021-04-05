@@ -27,10 +27,10 @@ ValueNotifier<GraphQLClient> clientFor({
   @required String uri,
   String subscriptionUri,
 }) {
-  Link link = HttpLink(uri: uri);
+  Link link = HttpLink(uri);
   if (subscriptionUri != null) {
     final WebSocketLink websocketLink = WebSocketLink(
-      url: subscriptionUri,
+      subscriptionUri,
       config: SocketClientConfig(
         autoReconnect: true,
         inactivityTimeout: Duration(seconds: 30),
@@ -48,18 +48,4 @@ ValueNotifier<GraphQLClient> clientFor({
   );
 }
 
-String uuidFromObject(Object object) {
-  if (object is Map<String, Object>) {
-    final String typeName = object['__typename'] as String;
-    final String id = object['id'].toString();
-
-    if (typeName != null && id != null) {
-      return <String>[typeName, id].join('/');
-    }
-  }
-  return null;
-}
-
-final OptimisticCache cache = OptimisticCache(
-  dataIdFromObject: uuidFromObject,
-);
+final GraphQLCache cache = GraphQLCache();

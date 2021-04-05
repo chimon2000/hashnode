@@ -14,25 +14,22 @@ description: A minimal hashnode client
 version: 1.0.6+1
 
 environment:
-  sdk: ">=2.2.2 <3.0.0"
+  sdk: '>=2.2.2 <3.0.0'
 
 dependencies:
-  flutter_dotenv: ^2.0.1
-  catcher: ^0.2.0
-  provider: ^3.0.0+1
-  url_launcher: ^5.1.0
-  html2md: ^0.3.1
-  flutter_markdown: ^0.2.0
-  graphql_flutter: ^2.1.0-beta.1
-  timeago: ^2.0.17
-  intl: ^0.15.8
-  logger: ^0.7.0+2
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  equatable: ^2.0.0
+  flutter_dotenv: ^3.1.0
+  flutter_markdown: ^0.6.1
+  graphql_flutter: ^4.0.1
+  html2md: ^1.0.1
+  intl: ^0.17.0
+  logger: ^1.0.0
+  provider: ^5.0.0
+  sentry_flutter: ^4.0.6
+  timeago: ^3.0.2
+  url_launcher: ^6.0.3
 
 dev_dependencies:
   flutter_test:
@@ -40,7 +37,6 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter.
 flutter:
   # The following line ensures that the Material Icons font is
