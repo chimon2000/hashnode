@@ -7,50 +7,59 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:html2md/html2md.dart' as html2md;
 
 const document = r'''
-  query Post($cuid: String!) {
-    post(cuid: $cuid){
+  query Post($slug: String!, $hostname: String) {
+    post(slug: $slug, hostname: $hostname){
       __typename
-      id: cuid
       author {
         username
+        publicationDomain
       }
-      title,
-      brief,
-      content,
-      contentMarkdown,
-      coverImage,
+      slug
+      cuid
+      title
+      brief
+      content
+      contentMarkdown
+      coverImage
       dateAdded
     }
   }
 ''';
 
 typedef BuilderFn = Widget Function(BuildContext context, Story story,
-    {RefetchFn refetch});
-typedef RefetchFn = bool Function();
+    {Refetch refetch});
 
 class StoryDetailQuery extends StatelessWidget {
-  final String cuid;
+  final String slug;
+  final String hostname;
   final BuilderFn builder;
 
   StoryDetailQuery({
-    @required this.cuid,
+    @required this.slug,
     @required this.builder,
+    this.hostname,
   });
 
   @override
   Widget build(BuildContext context) {
+    var options = QueryOptions(
+      document: gql(document),
+      variables: {'slug': slug, 'hostname': hostname},
+      pollInterval: Duration(seconds: 5),
+      fetchPolicy: FetchPolicy.networkOnly,
+    );
+
     return Query(
-      options: QueryOptions(
-        document: document,
-        variables: {'cuid': cuid},
-        pollInterval: 5000,
-      ),
+      options: options,
       builder: (result, {refetch, fetchMore}) {
-        if (result.errors != null) {
-          return Text(result.errors.toString());
+        if (result.hasException) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(child: Text(result.exception.toString())),
+          );
         }
 
-        if (result.loading) {
+        if (result.isLoading) {
           return Center(child: CircularProgressIndicator());
         }
         final Object post = result.data['post'];
@@ -75,14 +84,13 @@ class StoryDetail extends StatelessWidget {
     final TextTheme textTheme = theme.textTheme;
     String markdown = html2md.convert(story.content);
 
-    final customMarkdownStyleSheet = MarkdownStyleSheet
-        .fromTheme(theme)
-        .copyWith(p: textTheme.body1.copyWith(fontSize: 15));
+    final customMarkdownStyleSheet = MarkdownStyleSheet.fromTheme(theme)
+        .copyWith(p: textTheme.bodyText2.copyWith(fontSize: 15));
 
     final content = MarkdownBody(
       data: markdown,
       styleSheet: customMarkdownStyleSheet,
-      onTapLink: (link) async {
+      onTapLink: (link, _, __) async {
         if (await canLaunch(link)) {
           await launch(link);
         } else {
@@ -100,14 +108,14 @@ class StoryDetail extends StatelessWidget {
             padding: EdgeInsets.only(top: 16, left: 16, right: 16),
             child: Text(
               '${story.title}',
-              style: textTheme.headline,
+              style: textTheme.headline5,
             ),
           ),
           Padding(
             padding: EdgeInsets.only(bottom: 16, left: 16, right: 16),
             child: Text(
               'by ${story.author}',
-              style: textTheme.subhead,
+              style: textTheme.subtitle1,
             ),
           ),
           Padding(

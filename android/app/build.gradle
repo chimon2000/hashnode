@@ -51,11 +51,13 @@ android {
     signingConfigs {
         println "Loading keystore configuration"
 
-        if (keystoreExists) {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile rootProject.file("keystore.jks")
-            storePassword keystoreProperties['storePassword']
+        release {
+            if (keystoreExists) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
 

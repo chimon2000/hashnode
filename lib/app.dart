@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          builder: (_) => Settings(),
+          create: (_) => Settings(),
         ),
       ],
       child: Consumer<Settings>(
