@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hashnode/core/models/story.dart';
-import 'package:hashnode/core/providers/settings.dart';
-import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 const query = r'''
   query Stories($type: FeedType!, $currentPage: Int, $nextPage: Int) {
@@ -126,8 +123,9 @@ class StoryQuery extends StatelessWidget {
 
         print(storiesFeed[5]);
 
-        final stories =
-            storiesFeed.map((story) => Story.fromJson(story as Map<String, dynamic>)).toList();
+        final stories = storiesFeed
+            .map((story) => Story.fromJson(story as Map<String, dynamic>))
+            .toList();
 
         return builder(
           context,
@@ -138,132 +136,4 @@ class StoryQuery extends StatelessWidget {
       },
     );
   }
-}
-
-typedef OnStoryTapFn = void Function(Story story);
-
-class StoryList extends StatelessWidget {
-  final List<Story> stories;
-  final OnStoryTapFn onStoryTap;
-  final bool isFetchingMore;
-  final VoidCallback? onFetchMore;
-
-  StoryList(
-      {required this.stories,
-      required this.onStoryTap,
-      this.isFetchingMore = false,
-      this.onFetchMore});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.all(8.0),
-      children: [
-        ...stories
-            .map((story) => Container(
-                    child: StoryTile(
-                  story: story,
-                  onStoryTap: onStoryTap,
-                )))
-            .toList(),
-        Center(
-          child: TextButton(
-            child: Text('Load more...'),
-            onPressed: isFetchingMore ? null : onFetchMore,
-          ),
-        )
-      ],
-    );
-  }
-}
-
-class StoryTile extends StatelessWidget {
-  final Story story;
-  final OnStoryTapFn onStoryTap;
-
-  StoryTile({
-    required this.story,
-    required this.onStoryTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final TextTheme textTheme = theme.textTheme;
-    final settings = Provider.of<Settings>(context);
-
-    var tileTitle = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          story.title!,
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(
-          '${determineCaption(story)}',
-          style: textTheme.caption,
-        ),
-      ],
-    );
-
-    final subTitle = settings.displayDensity == DisplayDensity.comfortable
-        ? Container(
-            padding: EdgeInsets.symmetric(vertical: 5.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  story.brief!,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          )
-        : null;
-
-    return ListTile(
-      title: tileTitle,
-      subtitle: subTitle,
-      contentPadding: EdgeInsets.fromLTRB(8, 0, 16, 8),
-      onTap: () {
-        onStoryTap(story);
-      },
-    );
-  }
-}
-
-String determineCaption(Story story) {
-  final reactions = Intl.plural(
-    story.totalReactions!,
-    zero: '',
-    one: '${story.totalReactions} reaction',
-    many: '${story.totalReactions} reactions',
-    other: '${story.totalReactions} reactions',
-    name: 'reactions',
-    args: [story.totalReactions!],
-  );
-
-  final comments = Intl.plural(
-    story.responseCount!,
-    zero: '',
-    one: '${story.responseCount} comment',
-    many: '${story.responseCount} comments',
-    other: '${story.responseCount} comments',
-    name: 'comments',
-    args: [story.responseCount!],
-  );
-
-  final strings = [
-    reactions,
-    comments,
-  ].where((row) => row.isNotEmpty).toList();
-
-  final totals = list(strings);
-
-  return 'by ${story.author} ${story.timeAgo} ${totals.isEmpty ? "" : ", $totals"}';
-}
-
-String list([List<String> values = const []]) {
-  return '';
 }

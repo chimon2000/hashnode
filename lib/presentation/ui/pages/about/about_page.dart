@@ -76,24 +76,3 @@ class AboutPage extends StatelessWidget {
     );
   }
 }
-
-Widget divider(
-  BuildContext context, {
-  double height = 1,
-  double width = 1,
-  Color? color,
-}) {
-  return SizedBox(
-    height: height,
-    child: Center(
-      child: Container(
-        height: 0.0,
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: Divider.createBorderSide(context, color: color, width: 2),
-          ),
-        ),
-      ),
-    ),
-  );
-}

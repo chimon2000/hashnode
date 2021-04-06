@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Story extends Equatable {
@@ -69,4 +68,7 @@ class Story extends Equatable {
       dateAdded,
     ];
   }
+
+  @override
+  bool get stringify => true;
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hashnode/core/providers/client_provider.dart';
 import 'package:hashnode/core/providers/settings.dart';
-import 'package:hashnode/ui/pages/home/home.dart';
+import 'package:hashnode/presentation/ui/pages/home/home.dart';
 import 'package:provider/provider.dart';
 
 final String apiUri = 'https://api.hashnode.com';
 
-class MyApp extends StatelessWidget {
+class HashnodeApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
