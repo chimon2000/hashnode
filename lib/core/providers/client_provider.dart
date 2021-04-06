@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class ClientProvider extends StatelessWidget {
   ClientProvider({
-    @required this.child,
-    @required String uri,
-    String subscriptionUri,
+    required this.child,
+    required String uri,
+    String? subscriptionUri,
   }) : client = clientFor(
           uri: uri,
           subscriptionUri: subscriptionUri,
@@ -24,8 +24,8 @@ class ClientProvider extends StatelessWidget {
 }
 
 ValueNotifier<GraphQLClient> clientFor({
-  @required String uri,
-  String subscriptionUri,
+  required String uri,
+  String? subscriptionUri,
 }) {
   Link link = HttpLink(uri);
   if (subscriptionUri != null) {

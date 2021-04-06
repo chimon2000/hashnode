@@ -27,16 +27,16 @@ const document = r'''
 ''';
 
 typedef BuilderFn = Widget Function(BuildContext context, Story story,
-    {Refetch refetch});
+    {Refetch? refetch});
 
 class StoryDetailQuery extends StatelessWidget {
-  final String slug;
-  final String hostname;
+  final String? slug;
+  final String? hostname;
   final BuilderFn builder;
 
   StoryDetailQuery({
-    @required this.slug,
-    @required this.builder,
+    required this.slug,
+    required this.builder,
     this.hostname,
   });
 
@@ -62,9 +62,9 @@ class StoryDetailQuery extends StatelessWidget {
         if (result.isLoading) {
           return Center(child: CircularProgressIndicator());
         }
-        final Object post = result.data['post'];
+        final Object post = result.data!['post'];
 
-        final story = Story.fromJson(post);
+        final story = Story.fromJson(post as Map<String, dynamic>);
 
         return builder(context, story, refetch: refetch);
       },
@@ -75,17 +75,17 @@ class StoryDetailQuery extends StatelessWidget {
 class StoryDetail extends StatelessWidget {
   final Story story;
   StoryDetail({
-    @required this.story,
+    required this.story,
   });
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
-    String markdown = html2md.convert(story.content);
+    String markdown = html2md.convert(story.content!);
 
     final customMarkdownStyleSheet = MarkdownStyleSheet.fromTheme(theme)
-        .copyWith(p: textTheme.bodyText2.copyWith(fontSize: 15));
+        .copyWith(p: textTheme.bodyText2!.copyWith(fontSize: 15));
 
     final content = MarkdownBody(
       data: markdown,
@@ -103,7 +103,7 @@ class StoryDetail extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          if (story.coverImage != null) Image.network(story.coverImage),
+          if (story.coverImage != null) Image.network(story.coverImage!),
           Padding(
             padding: EdgeInsets.only(top: 16, left: 16, right: 16),
             child: Text(

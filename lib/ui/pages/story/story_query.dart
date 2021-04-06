@@ -49,15 +49,15 @@ const storyTypeMap = {
 enum StoryListType { featured, recent, trending }
 
 typedef BuilderFn = Widget Function(BuildContext context, List<Story> stories,
-    {Refetch refetch, Function(FetchMoreOptions) fetchMore});
+    {Refetch? refetch, Function(FetchMoreOptions)? fetchMore});
 
 class StoryQuery extends StatelessWidget {
   final BuilderFn builder;
   final StoryListType listType;
 
   StoryQuery({
-    @required this.builder,
-    @required this.listType,
+    required this.builder,
+    required this.listType,
   });
 
   @override
@@ -120,14 +120,14 @@ class StoryQuery extends StatelessWidget {
         }
 
         final List<Object> storiesFeed = [
-          ...result.data['current'],
-          ...result.data['next']
+          ...result.data!['current'],
+          ...result.data!['next']
         ];
 
         print(storiesFeed[5]);
 
         final stories =
-            storiesFeed.map((story) => Story.fromJson(story)).toList();
+            storiesFeed.map((story) => Story.fromJson(story as Map<String, dynamic>)).toList();
 
         return builder(
           context,
@@ -146,11 +146,11 @@ class StoryList extends StatelessWidget {
   final List<Story> stories;
   final OnStoryTapFn onStoryTap;
   final bool isFetchingMore;
-  final VoidCallback onFetchMore;
+  final VoidCallback? onFetchMore;
 
   StoryList(
-      {@required this.stories,
-      @required this.onStoryTap,
+      {required this.stories,
+      required this.onStoryTap,
       this.isFetchingMore = false,
       this.onFetchMore});
 
@@ -182,8 +182,8 @@ class StoryTile extends StatelessWidget {
   final OnStoryTapFn onStoryTap;
 
   StoryTile({
-    @required this.story,
-    @required this.onStoryTap,
+    required this.story,
+    required this.onStoryTap,
   });
 
   @override
@@ -196,7 +196,7 @@ class StoryTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          story.title,
+          story.title!,
           overflow: TextOverflow.ellipsis,
         ),
         Text(
@@ -213,7 +213,7 @@ class StoryTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  story.brief,
+                  story.brief!,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -235,23 +235,23 @@ class StoryTile extends StatelessWidget {
 
 String determineCaption(Story story) {
   final reactions = Intl.plural(
-    story.totalReactions,
+    story.totalReactions!,
     zero: '',
     one: '${story.totalReactions} reaction',
     many: '${story.totalReactions} reactions',
     other: '${story.totalReactions} reactions',
     name: 'reactions',
-    args: [story.totalReactions],
+    args: [story.totalReactions!],
   );
 
   final comments = Intl.plural(
-    story.responseCount,
+    story.responseCount!,
     zero: '',
     one: '${story.responseCount} comment',
     many: '${story.responseCount} comments',
     other: '${story.responseCount} comments',
     name: 'comments',
-    args: [story.responseCount],
+    args: [story.responseCount!],
   );
 
   final strings = [
