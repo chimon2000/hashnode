@@ -1,0 +1,33 @@
+name: Test app
+
+on:
+  push:
+    branches: [main]
+jobs:
+  test:
+    name: Test
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: subosito/flutter-action@v1
+
+      - name: Add pub cache to path
+        shell: bash
+        run: |
+          echo "export PATH=$PATH:$HOME/.pub-cache/bin" >> $GITHUB_PATH
+
+      - name: Install global dependencies
+        run: |
+          dart pub global activate grinder
+
+      - name: Get local dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: grind coverage
+
+      - uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
