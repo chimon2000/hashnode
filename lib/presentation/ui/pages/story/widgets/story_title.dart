@@ -9,6 +9,7 @@ class StoryTile extends StatelessWidget {
   final OnStoryTapFn onStoryTap;
 
   StoryTile({
+    Key? key,
     required this.story,
     required this.onStoryTap,
   });

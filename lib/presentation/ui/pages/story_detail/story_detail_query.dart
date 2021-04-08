@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hashnode/core/models/story.dart';
+import 'package:hashnode/presentation/ui/widgets/graphql_query_builder.dart';
 
 const document = r'''
   query Post($slug: String!, $hostname: String) {
@@ -22,8 +23,12 @@ const document = r'''
   }
 ''';
 
-typedef BuilderFn = Widget Function(BuildContext context, Story story,
-    {Refetch? refetch});
+typedef BuilderFn = Widget Function(
+  BuildContext context,
+  Story story, {
+  Refetch? refetch,
+  Function(FetchMoreOptions)? fetchMore,
+});
 
 class StoryDetailQuery extends StatelessWidget {
   final String? slug;
@@ -41,29 +46,29 @@ class StoryDetailQuery extends StatelessWidget {
     var options = QueryOptions(
       document: gql(document),
       variables: {'slug': slug, 'hostname': hostname},
-      pollInterval: Duration(seconds: 5),
+      // pollInterval: Duration(seconds: 5),
       fetchPolicy: FetchPolicy.networkOnly,
     );
 
-    return Query(
+    return GraphQLQueryBuilder(
       options: options,
-      builder: (result, {refetch, fetchMore}) {
-        if (result.hasException) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(child: Text(result.exception.toString())),
-          );
-        }
-
-        if (result.isLoading) {
-          return Center(child: CircularProgressIndicator());
-        }
-        final Object post = result.data!['post'];
-
-        final story = Story.fromJson(post as Map<String, dynamic>);
-
-        return builder(context, story, refetch: refetch);
+      builder: builder,
+      errorBuilder: (_, result) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: Text(
+              result.exception.toString(),
+              key: errorTextKey,
+            ),
+          ),
+        );
       },
+      loadingBuilder: (_, __) => Center(child: CircularProgressIndicator()),
+      serializer: (data) => Story.fromJson(data!['post']),
     );
   }
+
+  @visibleForTesting
+  static const errorTextKey = ValueKey('story_detail_query_error_text_key');
 }

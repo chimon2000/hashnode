@@ -17,7 +17,7 @@ class StoryDetailPage extends StatelessWidget {
       body: StoryDetailQuery(
         slug: slug,
         hostname: hostname,
-        builder: (context, story, {refetch}) {
+        builder: (context, story, {refetch, fetchMore}) {
           return RefreshIndicator(
             child: StoryDetail(
               story: story,

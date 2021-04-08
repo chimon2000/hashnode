@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -34,23 +36,6 @@ class Story extends Equatable {
     return timeago.format(dateAdded);
   }
 
-  static Story fromJson(Map<String, dynamic> json) => Story(
-        cuid: json['cuid'],
-        brief: json['brief'],
-        title: json['title'],
-        content: json['content'],
-        contentMarkdown: json['contentMarkdown'],
-        coverImage: json['coverImage'],
-        dateAdded: DateTime.parse(
-          json['dateAdded'],
-        ),
-        responseCount: json['responseCount'],
-        totalReactions: json['totalReactions'],
-        author: json['author']['username'],
-        hostname: Uri.tryParse(json['author']['publicationDomain'] ?? '')?.host,
-        slug: json['slug'],
-      );
-
   @override
   List<Object?> get props {
     return [
@@ -71,4 +56,40 @@ class Story extends Equatable {
 
   @override
   bool get stringify => true;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'cuid': cuid,
+      'slug': slug,
+      'title': title,
+      'brief': brief,
+      'content': content,
+      'contentMarkdown': contentMarkdown,
+      'coverImage': coverImage,
+      'responseCount': responseCount,
+      'totalReactions': totalReactions,
+      'author': {
+        'username': author,
+        'publicationDomain': hostname,
+      },
+      'dateAdded': dateAdded.toIso8601String(),
+    };
+  }
+
+  static Story fromJson(Map<String, dynamic> json) => Story(
+        cuid: json['cuid'],
+        brief: json['brief'],
+        title: json['title'],
+        content: json['content'],
+        contentMarkdown: json['contentMarkdown'],
+        coverImage: json['coverImage'],
+        dateAdded: DateTime.parse(
+          json['dateAdded'],
+        ),
+        responseCount: json['responseCount'],
+        totalReactions: json['totalReactions'],
+        author: json['author']['username'],
+        hostname: Uri.tryParse(json['author']['publicationDomain'] ?? '')?.host,
+        slug: json['slug'],
+      );
 }

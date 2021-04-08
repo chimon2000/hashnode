@@ -42,5 +42,5 @@ class StoryList extends StatelessWidget {
   }
 
   @visibleForTesting
-  static const storyListFetchButtonKey = ValueKey('storyListFetchButton');
+  static const storyListFetchButtonKey = ValueKey('story_list_fetch_button');
 }

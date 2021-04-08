@@ -79,3 +79,4 @@ bin/
 macos/Flutter/ephemeral/Flutter-Generated.xcconfig
 macos/Flutter/ephemeral/flutter_export_environment.sh
 ios/Flutter/flutter_export_environment.sh
+coverage/
