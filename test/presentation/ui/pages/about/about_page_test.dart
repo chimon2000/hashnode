@@ -16,7 +16,7 @@ void main() {
   group('AboutPage', () {
     testWidgets('smoke test', (WidgetTester tester) async {
       await tester.pumpWidget(
-        TesterWrapper(
+        TestWrapper(
           child: AboutPage(),
         ),
       );

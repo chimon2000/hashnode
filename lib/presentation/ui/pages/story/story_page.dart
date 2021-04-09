@@ -19,6 +19,10 @@ class StoryPage extends StatefulWidget {
 
   @override
   _StoryPageState createState() => _StoryPageState();
+
+  @visibleForTesting
+  static const refreshIndicatorKey =
+      ValueKey('story_page_refresh_indicator_key');
 }
 
 class _StoryPageState extends State<StoryPage> {
@@ -27,82 +31,13 @@ class _StoryPageState extends State<StoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final settings = Provider.of<Settings>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.listTitle),
-        leading: Consumer<Settings>(
-          builder: (context, settings, _) {
-            return IconButton(
-              icon: Image(
-                image: settings.theme == AppTheme.dark
-                    ? AssetImage('images/hashnode_light_32.png')
-                    : AssetImage('images/hashnode_dark_32.png'),
-              ),
-              onPressed: () => settings.toggleTheme(),
-            );
-          },
-        ),
-        actions: <Widget>[
-          PopupMenuButton(
-            onSelected: (dynamic value) {
-              if (value is AppTheme) {
-                settings.toggleTheme();
-              }
-
-              if (value is DisplayDensity) {
-                settings.setDisplayDensity(value);
-              }
-
-              if (value == 'about') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return AboutPage();
-                    },
-                  ),
-                );
-              }
-            },
-            itemBuilder: (context) {
-              final settings = Provider.of<Settings>(context);
-              final themeText = settings.theme == AppTheme.dark
-                  ? "Disable dark mode"
-                  : "Enable dark mode";
-
-              final displayDensity = settings.displayDensity;
-              final isDisplayComfortable =
-                  displayDensity == DisplayDensity.comfortable;
-              final displayDensityText = isDisplayComfortable
-                  ? 'Enable compact mode'
-                  : 'Disable compact mode';
-
-              return [
-                PopupMenuItem<AppTheme>(
-                  value: settings.theme,
-                  child: Text(themeText),
-                ),
-                PopupMenuItem<DisplayDensity>(
-                  value: isDisplayComfortable
-                      ? DisplayDensity.compact
-                      : DisplayDensity.comfortable,
-                  child: Text(displayDensityText),
-                ),
-                PopupMenuItem<String>(
-                  value: 'about',
-                  child: Text('About'),
-                ),
-              ];
-            },
-          )
-        ],
-        elevation: 0.0,
-      ),
+      appBar: StoryPageHeader(title: widget.listTitle),
       body: StoryQuery(
         listType: widget.listType,
         builder: (context, stories, {refetch, fetchMore}) {
           return RefreshIndicator(
+            key: StoryPage.refreshIndicatorKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,16 +86,16 @@ class _StoryPageState extends State<StoryPage> {
 }
 
 FetchMoreOptions buildFetchMoreOpts({page = 2}) {
-  FetchMoreOptions options = FetchMoreOptions(
+  FetchMoreOptions options = FetchMoreOptions.partial(
     variables: {'currentPage': page, 'nextPage': page + 1},
     updateQuery: (previousResultData, fetchMoreResultData) {
       final List<Object> currentPage = [
-        ...previousResultData!['current'] as List<Object>,
-        ...previousResultData['next'] as List<Object>,
+        ...previousResultData!['current'],
+        ...previousResultData['next'],
       ];
       final List<Object> nextPage = [
-        ...fetchMoreResultData!['current'] as List<Object>,
-        ...fetchMoreResultData['next'] as List<Object>,
+        ...fetchMoreResultData!['current'],
+        ...fetchMoreResultData['next'],
       ];
 
       fetchMoreResultData['current'] = currentPage;
@@ -171,4 +106,112 @@ FetchMoreOptions buildFetchMoreOpts({page = 2}) {
   );
 
   return options;
+}
+
+@visibleForTesting
+class StoryPageHeader extends StatelessWidget implements PreferredSizeWidget {
+  const StoryPageHeader({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      leading: Consumer<Settings>(
+        builder: (context, settings, _) {
+          return IconButton(
+            key: themeButtonKey,
+            icon: Image(
+              image: settings.theme == AppTheme.dark
+                  ? AssetImage('images/hashnode_light_32.png')
+                  : AssetImage('images/hashnode_dark_32.png'),
+            ),
+            onPressed: () => settings.toggleTheme(),
+          );
+        },
+      ),
+      actions: <Widget>[SettingsMenuButton()],
+      elevation: 0.0,
+    );
+  }
+
+  @visibleForTesting
+  static const themeButtonKey = ValueKey('story_list_header_theme_button_key');
+}
+
+@visibleForTesting
+class SettingsMenuButton extends StatelessWidget {
+  const SettingsMenuButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+      onSelected: (dynamic value) {
+        if (value is AppTheme) {
+          context.read<Settings>().toggleTheme();
+        }
+
+        if (value is DisplayDensity) {
+          context.read<Settings>().setDisplayDensity(value);
+        }
+
+        if (value == 'about') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return AboutPage();
+              },
+            ),
+          );
+        }
+      },
+      itemBuilder: (context) {
+        final settings = context.read<Settings>();
+        final themeText = settings.theme == AppTheme.dark
+            ? "Disable dark mode"
+            : "Enable dark mode";
+
+        final displayDensity = settings.displayDensity;
+        final isDisplayComfortable =
+            displayDensity == DisplayDensity.comfortable;
+        final displayDensityText = isDisplayComfortable
+            ? 'Enable compact mode'
+            : 'Disable compact mode';
+
+        return [
+          PopupMenuItem<AppTheme>(
+            key: themeButtonKey,
+            value: settings.theme,
+            child: Text(themeText),
+          ),
+          PopupMenuItem<DisplayDensity>(
+            key: displayButtonKey,
+            value: isDisplayComfortable
+                ? DisplayDensity.compact
+                : DisplayDensity.comfortable,
+            child: Text(displayDensityText),
+          ),
+          PopupMenuItem<String>(
+            key: aboutButtonKey,
+            value: 'about',
+            child: Text('About'),
+          ),
+        ];
+      },
+    );
+  }
+
+  @visibleForTesting
+  static const themeButtonKey = ValueKey('settings_theme_button_key');
+
+  @visibleForTesting
+  static const displayButtonKey = ValueKey('settings_display_button_key');
+
+  @visibleForTesting
+  static const aboutButtonKey = ValueKey('settings_about_button_key');
 }

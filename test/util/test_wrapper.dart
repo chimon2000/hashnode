@@ -3,7 +3,7 @@ import 'package:hashnode/core/providers/settings.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-class TesterWrapper extends StatelessWidget {
+class TestWrapper extends StatelessWidget {
   final List<SingleChildWidget>? providers;
   final Widget child;
   final TargetPlatform platform;
@@ -12,7 +12,7 @@ class TesterWrapper extends StatelessWidget {
     ChangeNotifierProvider.value(value: Settings())
   ];
 
-  TesterWrapper({
+  TestWrapper({
     Key? key,
     required this.child,
     this.providers,

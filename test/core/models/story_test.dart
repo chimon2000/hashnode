@@ -23,6 +23,13 @@ void main() {
 
       expect(story, anotherStory);
     });
+    test('toMap', () {
+      var story = Story.fromJson(json);
+      var anotherStory = Story.fromJson(json);
+
+      expect(story, anotherStory);
+      expect(story.toMap(), anotherStory.toMap());
+    });
     test('toString', () {
       var story = Story.fromJson(json);
       var anotherStory = Story.fromJson(json);
