@@ -26,7 +26,9 @@ jobs:
         run: flutter pub get
 
       - name: Run tests
-        run: grind coverage
+        run: |
+          touch .env
+          grind coverage
 
       - uses: codecov/codecov-action@v1
         with:
