@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hashnode/ui/pages/story/story_page.dart';
-import 'package:hashnode/ui/pages/story/story_query.dart';
+import 'package:hashnode/presentation/ui/pages/story/story_page.dart';
+import 'package:hashnode/presentation/ui/pages/story/story_query.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.title}) : super(key: key);
-  final String title;
+  HomePage({Key? key, this.title}) : super(key: key);
+  final String? title;
 
   @override
   _HomePageState createState() => _HomePageState();

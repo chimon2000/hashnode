@@ -44,16 +44,16 @@ class AboutPage extends StatelessWidget {
             subtitle: Text(
               'A software engineer of perfectly adecquate merit',
               style:
-                  textTheme.subtitle.copyWith(color: textTheme.caption.color),
+                  textTheme.subtitle!.copyWith(color: textTheme.caption!.color),
             ),
             dense: true,
           ),
         ]..addAll(
             contactInfo.map<Widget>(
               (info) {
-                var title = info['title'];
-                var subtitle = info['subtitle'];
-                var url = info['url'];
+                var title = info['title']!;
+                var subtitle = info['subtitle']!;
+                var url = info['url']!;
 
                 return ListTile(
                   dense: true,
@@ -75,25 +75,4 @@ class AboutPage extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget divider(
-  BuildContext context, {
-  double height = 1,
-  double width = 1,
-  Color color,
-}) {
-  return SizedBox(
-    height: height,
-    child: Center(
-      child: Container(
-        height: 0.0,
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: Divider.createBorderSide(context, color: color, width: 2),
-          ),
-        ),
-      ),
-    ),
-  );
 }

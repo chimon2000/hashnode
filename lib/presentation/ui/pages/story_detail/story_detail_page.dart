@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:hashnode/ui/pages/story_detail/story_detail_query.dart';
+import 'package:hashnode/presentation/ui/pages/story_detail/story_detail_query.dart';
+import 'package:hashnode/presentation/ui/pages/story_detail/widgets/widgets.dart';
 
 class StoryDetailPage extends StatelessWidget {
-  final String slug;
-  final String hostname;
+  final String? slug;
+  final String? hostname;
 
-  StoryDetailPage({@required this.slug, this.hostname});
+  StoryDetailPage({required this.slug, this.hostname});
 
   @override
   Widget build(BuildContext context) {

@@ -1,27 +1,26 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class Story extends Equatable {
-  final String cuid;
-  final String slug;
-  final String title;
-  final String brief;
-  final String content;
-  final String contentMarkdown;
-  final String coverImage;
-  final String hostname;
-  final int responseCount;
-  final int totalReactions;
-  final String author;
+  final String? cuid;
+  final String? slug;
+  final String? title;
+  final String? brief;
+  final String? content;
+  final String? contentMarkdown;
+  final String? coverImage;
+  final String? hostname;
+  final int? responseCount;
+  final int? totalReactions;
+  final String? author;
   final DateTime dateAdded;
 
   Story({
-    @required this.cuid,
-    @required this.title,
-    @required this.brief,
-    @required this.dateAdded,
-    @required this.slug,
+    required this.cuid,
+    required this.title,
+    required this.brief,
+    required this.dateAdded,
+    required this.slug,
     this.content,
     this.contentMarkdown,
     this.coverImage,
@@ -53,7 +52,7 @@ class Story extends Equatable {
       );
 
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       cuid,
       slug,
@@ -69,4 +68,7 @@ class Story extends Equatable {
       dateAdded,
     ];
   }
+
+  @override
+  bool get stringify => true;
 }

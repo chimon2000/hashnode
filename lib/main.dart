@@ -12,6 +12,6 @@ Future main() async {
 
   await SentryFlutter.init(
     (options) => options.dsn = dsn,
-    appRunner: () => runApp(MyApp()),
+    appRunner: () => runApp(HashnodeApp()),
   );
 }

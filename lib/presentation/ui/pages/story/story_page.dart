@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hashnode/core/providers/settings.dart';
-import 'package:hashnode/ui/pages/about/about_page.dart';
-import 'package:hashnode/ui/pages/story/story_query.dart';
-import 'package:hashnode/ui/pages/story_detail/story_detail_page.dart';
+import 'package:hashnode/presentation/ui/pages/about/about_page.dart';
+import 'package:hashnode/presentation/ui/pages/story/story_query.dart';
+import 'package:hashnode/presentation/ui/pages/story/widgets/widgets.dart';
+import 'package:hashnode/presentation/ui/pages/story_detail/story_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -11,7 +12,7 @@ class StoryPage extends StatefulWidget {
   final String listTitle;
 
   StoryPage({
-    Key key,
+    Key? key,
     this.listType = StoryListType.featured,
     this.listTitle = 'Featured stories',
   }) : super(key: key);
@@ -44,7 +45,7 @@ class _StoryPageState extends State<StoryPage> {
         ),
         actions: <Widget>[
           PopupMenuButton(
-            onSelected: (value) {
+            onSelected: (dynamic value) {
               if (value is AppTheme) {
                 settings.toggleTheme();
               }
@@ -116,7 +117,7 @@ class _StoryPageState extends State<StoryPage> {
                         isFetchingMore = true;
                       });
 
-                      await fetchMore(options);
+                      await fetchMore!(options);
 
                       setState(() {
                         isFetchingMore = false;
@@ -154,11 +155,11 @@ FetchMoreOptions buildFetchMoreOpts({page = 2}) {
     variables: {'currentPage': page, 'nextPage': page + 1},
     updateQuery: (previousResultData, fetchMoreResultData) {
       final List<Object> currentPage = [
-        ...previousResultData['current'] as List<Object>,
+        ...previousResultData!['current'] as List<Object>,
         ...previousResultData['next'] as List<Object>,
       ];
       final List<Object> nextPage = [
-        ...fetchMoreResultData['current'] as List<Object>,
+        ...fetchMoreResultData!['current'] as List<Object>,
         ...fetchMoreResultData['next'] as List<Object>,
       ];
 
