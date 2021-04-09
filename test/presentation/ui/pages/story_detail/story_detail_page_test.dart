@@ -28,7 +28,7 @@ void main() {
       };
 
       await tester.pumpWidget(
-        TesterWrapper(
+        TestWrapper(
           child: QueryMocker(
             mockedResponse: buildGoodResponse(mockedResult),
             child: StoryDetailPage(
@@ -61,7 +61,7 @@ void main() {
       };
 
       await tester.pumpWidget(
-        TesterWrapper(
+        TestWrapper(
           child: QueryMocker(
             mockedResponse: buildGoodResponse(mockedResult),
             child: StoryDetailPage(

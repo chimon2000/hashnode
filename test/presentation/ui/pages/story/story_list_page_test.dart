@@ -32,7 +32,7 @@ void main() {
       await tester.pumpWidget(
         QueryMocker(
           mockedResponse: buildGoodResponse(mockedResult),
-          child: TesterWrapper(
+          child: TestWrapper(
             child: StoryPage(),
           ),
         ),
@@ -77,7 +77,7 @@ void main() {
       await tester.pumpWidget(
         QueryMocker(
           mockedResponse: buildGoodResponse(mockedResult),
-          child: TesterWrapper(
+          child: TestWrapper(
             child: StoryPage(),
           ),
         ),
@@ -120,7 +120,7 @@ void main() {
       await tester.pumpWidget(
         QueryMocker(
           mockedResponse: buildGoodResponse(mockedResult),
-          child: TesterWrapper(
+          child: TestWrapper(
             child: StoryPage(),
           ),
         ),
@@ -159,7 +159,7 @@ void main() {
       await tester.pumpWidget(
         QueryMocker(
           mockedResponse: buildGoodResponse(mockedResult),
-          child: TesterWrapper(
+          child: TestWrapper(
             child: StoryPage(),
           ),
         ),
@@ -177,7 +177,7 @@ void main() {
     testWidgets('smoke screen', (tester) async {
       final key = ValueKey('testButton');
       await tester.pumpWidget(
-        TesterWrapper(
+        TestWrapper(
           child: SettingsMenuButton(
             key: key,
           ),

@@ -32,7 +32,7 @@ void main() {
       await tester.pumpWidget(
         QueryMocker(
           mockedResponse: buildGoodResponse(mockedResult),
-          child: TesterWrapper(
+          child: TestWrapper(
             child: HomePage(),
           ),
         ),

@@ -40,7 +40,7 @@ void main() {
 
       final containerKey = ValueKey('containerKey');
       await tester.pumpWidget(
-        TesterWrapper(
+        TestWrapper(
           child: QueryMocker(
             mockedResponse: buildGoodResponse(mockedResult),
             child: StoryQuery(
@@ -85,7 +85,7 @@ void main() {
 
       final containerKey = ValueKey('containerKey');
       await tester.pumpWidget(
-        TesterWrapper(
+        TestWrapper(
           child: QueryMocker(
             mockedResponse: buildGoodResponse(mockedResult),
             child: StoryQuery(

@@ -20,7 +20,7 @@ void main() {
       var fetchMore = false;
       // Build our app and trigger a frame.
       await tester.pumpWidget(
-        TesterWrapper(
+        TestWrapper(
           providers: [ChangeNotifierProvider.value(value: Settings())],
           child: StoryList(
             stories: stories,

@@ -19,7 +19,7 @@ void main() {
       final expectedStory = stories[0];
       // Build our app and trigger a frame.
       await tester.pumpWidget(
-        TesterWrapper(
+        TestWrapper(
           providers: [ChangeNotifierProvider.value(value: Settings())],
           child: StoryTile(
             story: stories[0],
