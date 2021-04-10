@@ -14,13 +14,6 @@ Future<void> test() async {
 @Task('generate coverage report')
 Future<void> coverage() async {
   await runTests(true);
-  await runAsync('lcov', arguments: [
-    '--remove',
-    'coverage/lcov.info',
-    'lib/main.dart',
-    '-o',
-    'coverage/lcov.info'
-  ]);
 }
 
 Future<void> runTests([bool genCoverage = false]) =>
