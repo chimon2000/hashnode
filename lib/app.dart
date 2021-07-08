@@ -3,8 +3,11 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hashnode/core/providers/client_provider.dart';
 import 'package:hashnode/core/providers/settings.dart';
 import 'package:hashnode/presentation/ui/pages/home/home.dart';
+import 'package:hashnode/presentation/ui/pages/story_detail/story_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+
+import 'package:routemaster/routemaster.dart';
 
 final String apiUri = 'https://api.hashnode.com';
 
@@ -35,10 +38,11 @@ class HashnodeApp extends StatelessWidget {
 
           return ClientProvider(
             client: graphQLClient,
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
+            child: MaterialApp.router(
               theme: themeData,
-              home: HomePage(title: 'Hashnode'),
+              routerDelegate:
+                  RoutemasterDelegate(routesBuilder: (context) => routes),
+              routeInformationParser: RoutemasterParser(),
             ),
           );
         },
@@ -46,3 +50,22 @@ class HashnodeApp extends StatelessWidget {
     );
   }
 }
+
+final routes = RouteMap(routes: {
+  '/': (routeData) => Redirect('/stories/trending'),
+  '/stories/:type': (_) {
+    return MaterialPage(
+      key: ValueKey('stories'),
+      child: HomePage(),
+    );
+  },
+  '/story': (routeData) {
+    return MaterialPage(
+      key: ValueKey('story'),
+      child: StoryDetailPage(
+        slug: routeData.queryParameters['slug'],
+        hostname: routeData.queryParameters['hostname'],
+      ),
+    );
+  },
+});

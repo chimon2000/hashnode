@@ -1,0 +1,442 @@
+directive @auth on FIELD_DEFINITION
+
+type Contributor {
+  user: User
+  stamp: String
+  _id: ID
+}
+
+type CreatePostOutput implements MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+  post: PostDetailed
+}
+
+input createReplyInput {
+  postId: String!
+  responseId: String!
+  contentInMarkdown: String!
+}
+
+type createReplyOutput implements MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+  reply: Response
+}
+
+input createResponseInput {
+  postId: String!
+  contentInMarkdown: String!
+}
+
+type createResponseOutput implements MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+  response: Response
+}
+
+input CreateStoryInput {
+  title: String!
+  slug: String
+  contentMarkdown: String!
+  coverImageURL: String
+  isRepublished: isRepublished
+  tags: [TagsInput]!
+  isAnonymous: Boolean
+  sourcedFromGithub: Boolean
+}
+
+type DeleteOutput implements MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+}
+
+enum FeedType {
+  COMMUNITY
+  BEST
+  NEW
+  FEATURED
+}
+
+type FollowUserOutput implements MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+}
+
+input isRepublished {
+  originalArticleURL: String!
+}
+
+type Links {
+  hashnode: String
+  website: String
+  github: String
+  twitter: String
+}
+
+type Mutation {
+  followUser(userId: String!): FollowUserOutput!
+  createStory(input: CreateStoryInput!): CreatePostOutput!
+  createPublicationStory(input: CreateStoryInput!, publicationId: String!, hideFromHashnodeFeed: Boolean = false): CreatePostOutput!
+  updateStory(postId: String!, input: UpdateStoryInput!): CreatePostOutput!
+  reactToStory(input: ReactToPostInput!): ReactToPostOutput!
+  deletePost(id: String!): DeleteOutput!
+  createResponse(input: createResponseInput!): createResponseOutput!
+  updateResponse(responseId: String!, postId: String, contentInMarkdown: String!): createResponseOutput!
+  reactToResponse(input: ReactToResponseInput!): ReactToResponseOutput!
+  deleteResponse(responseId: String!, postId: String!): DeleteOutput!
+  createReply(input: createReplyInput!): createReplyOutput!
+  updateReply(replyId: String!, responseId: String!, postId: String!, contentInMarkdown: String!): createReplyOutput!
+  reactToReply(input: ReactToReplyInput!): ReactToReplyOutput!
+  deleteReply(replyId: String!, responseId: String!, postId: String!): DeleteOutput!
+}
+
+interface MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+}
+
+type Poll {
+  pollOptions: [PollOption]
+  totalVotes: Int
+  pollClosingDate: String
+  pollRunningTime: String
+}
+
+type PollOption {
+  _id: ID!
+  option: String!
+  votes: Int!
+}
+
+input PollOptionInput {
+  content: String!
+}
+
+type Post {
+  _id: ID!
+  followersCount: Int
+  author: User
+  cuid: String
+  slug: String
+  title: String
+  type: String!
+  popularity: Float
+  reactionsByCurrentUser: [Reaction]
+  totalReactions: Int
+  bookmarkedIn: [String]
+  partOfPublication: Boolean
+  contributors: [Contributor]
+  isActive: Boolean
+  replyCount: Int
+  responseCount: Int
+  dateAdded: String
+  tags: [Tag]
+  brief: String
+  coverImage: String!
+  isAnonymous: Boolean
+  dateUpdated: String
+  dateFeatured: String
+  reactions: [Reaction]
+  poll: Poll
+  contentMarkdown: String
+}
+
+type PostDetailed {
+  _id: ID!
+  sourcedFromGithub: Boolean
+  isRepublished: Boolean
+  followersCount: Int
+  cuid: String
+  slug: String
+  title: String
+  type: String
+  partOfPublication: Boolean
+  publication: Publication
+  dateUpdated: String
+  totalReactions: Int
+  numCollapsed: Int
+  isDelisted: Boolean
+  isFeatured: Boolean
+  isActive: Boolean
+  replyCount: Int
+  responseCount: Int
+  popularity: Float
+  dateAdded: String
+  contentMarkdown: String
+  content: String
+  brief: String
+  coverImage: String
+  isAnonymous: Boolean
+  tags: [Tag]
+  untaggedFrom: [String]
+  contributors: [Contributor]
+  bookmarkedIn: [String]
+  reactions: [ReactionsAndCount]
+  author: User
+  reactionsByCurrentUser: [Reaction]
+  poll: Poll
+  responses(page: Int = 0): [Response!]!
+}
+
+type Publication {
+  _id: ID!
+  author: String
+  isActive: Boolean
+  username: String
+  headerColor: String
+  logo: String
+  metaHTML: String
+  meta: String
+  title: String
+  domain: String
+  favicon: String
+  description: String
+  displayTitle: String
+  ogImage: String
+  embedCode: String
+  layout: String
+  sitemapSubmitted: Boolean
+  tweetedAboutBlog: Boolean
+  fbPixelID: String
+  gaTrackingID: String
+  isAMPEnabled: Boolean
+  metaTags: String
+  imprint: String
+  imprintMarkdown: String
+  links: Links
+  posts(page: Int = 0): [Post]
+}
+
+input PublicationDetails {
+  publicationId: String!
+}
+
+type Query {
+  user(username: String!): User
+  storiesFeed(type: FeedType!, page: Int = 0): [Post]
+  amas(page: Int): [Post]
+  post(slug: String!, hostname: String): PostDetailed
+  tagCategories: [TagCategory]
+}
+
+type Reaction {
+  image: String!
+  name: ReactionName!
+}
+
+enum ReactionName {
+  THUMBS_UP
+  LOVE
+  UNICORN
+  CLAP
+  BEER
+  TROPHY
+  HEART_EYES
+  TAKE_MY_MONEY
+  PARTY
+  ROCKET
+}
+
+type ReactionsAndCount {
+  reaction: Reaction!
+  count: Int!
+}
+
+input ReactToPostInput {
+  reaction: ReactionName!
+  postId: String!
+}
+
+type ReactToPostOutput implements MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+}
+
+input ReactToReplyInput {
+  postId: String!
+  responseId: String!
+  replyId: String!
+  reaction: ReactionName!
+}
+
+type ReactToReplyOutput implements MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+}
+
+input ReactToResponseInput {
+  responseId: String!
+  postId: String!
+  reaction: ReactionName!
+}
+
+type ReactToResponseOutput implements MutationOutput {
+  code: Int!
+  success: Boolean!
+  message: String!
+}
+
+type Reply {
+  _id: ID!
+  content: String!
+  contentMarkdown: String!
+  author: User!
+  dateAdded: String!
+  isActive: Boolean
+  stamp: String
+  totalReactions: Int
+  reactions: [ReactionsAndCount]
+  reactionsByCurrentUser: [Reaction]
+}
+
+type Response {
+  _id: ID!
+  content: String
+  contentMarkdown: String
+  author: User
+  stamp: String
+  post: String
+  totalReactions: Int
+  reactions: [ReactionsAndCount]
+  bookmarkedIn: [String]
+  isCollapsed: Boolean
+  isActive: Boolean
+  dateAdded: String
+  popularity: Float
+  replies: [Reply]
+  reactionsByCurrentUser: [Reaction]
+}
+
+type SocialMedia {
+  twitter: String
+  github: String
+  stackoverflow: String
+  linkedin: String
+  google: String
+  website: String
+  facebook: String
+}
+
+type Tag {
+  _id: ID!
+  name: String
+  slug: String
+  isApproved: Boolean
+  logo: String
+  isActive: Boolean
+  numPosts: Int
+  followersCount: Int
+  tagline: String
+  wiki: String
+  wikiMarkdown: String
+  stats: TagStats
+  leaderboard: TagLeaderBoard
+  managers: [TagManager]
+  socialMedia: TagSocialMedia
+  posts(filter: TagsPostFilter!, page: Int = 0): [Post]
+  contributors: TagContributors
+}
+
+type TagCategory {
+  _id: ID!
+  name: String!
+  isActive: Boolean!
+  priority: Int
+  slug: String!
+  tags: [Tag]
+}
+
+type TagContributorLeaders {
+  monthlyTopDevelopers: [TagLeaderBoardMember]
+  allTimeTopDevelopers: [TagLeaderBoardMember]
+}
+
+type TagContributors {
+  managers: [TagManager]
+  leaders: TagContributorLeaders
+}
+
+type TagLeaderBoard {
+  monthlyTopDevelopers: [TagLeaderBoardMember]
+  allTimeTopDevelopers: [TagLeaderBoardMember]
+}
+
+type TagLeaderBoardMember {
+  user: User
+  appreciations: Int
+  upvotes: Int
+}
+
+type TagManager {
+  _id: ID!
+  role: String!
+  user: User
+}
+
+input TagsInput {
+  _id: ID!
+  slug: String
+  name: String
+}
+
+type TagSocialMedia {
+  github: String
+  twitter: String
+  officialWebsite: String
+}
+
+enum TagsPostFilter {
+  HOT
+  RECENT
+  BEST
+}
+
+type TagStats {
+  currentWeekPostsCount: Int
+  lastWeekPostsCount: Int
+  currentWeekFollowersCount: Int
+  lastWeekFollowersCount: Int
+}
+
+input UpdateStoryInput {
+  title: String!
+  slug: String
+  contentMarkdown: String!
+  coverImageURL: String
+  isRepublished: isRepublished
+  isPartOfPublication: PublicationDetails!
+  tags: [TagsInput]!
+  sourcedFromGithub: Boolean
+}
+
+type User {
+  _id: ID!
+  username: String
+  name: String
+  tagline: String
+  isEvangelist: Boolean
+  dateJoined: String
+  socialMedia: SocialMedia
+  numFollowing: Int
+  numFollowers: Int
+  isDeactivated: Boolean
+  location: String
+  photo: String
+  coverImage: String
+  numPosts: Int
+  numReactions: Int
+  publication: Publication
+  blogHandle: String
+  publicationDomain: String
+  followers: [User]
+}
+

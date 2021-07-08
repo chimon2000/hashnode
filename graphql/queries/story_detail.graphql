@@ -1,0 +1,17 @@
+ query Post($slug: String!, $hostname: String) {
+    post(slug: $slug, hostname: $hostname){
+      __typename
+      author {
+        username
+        publicationDomain
+      }
+      slug
+      cuid
+      title
+      brief
+      content
+      contentMarkdown
+      coverImage
+      dateAdded
+    }
+  }

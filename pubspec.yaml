@@ -18,6 +18,8 @@ dependencies:
   logger: ^1.0.0
   mockito: ^5.0.3
   provider: ^5.0.0
+  responsive_builder: ^0.4.1
+  routemaster: ^0.7.0
   sentry_flutter: ^5.0.0
   timeago: ^3.0.2
   url_launcher: ^6.0.3

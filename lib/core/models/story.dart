@@ -89,7 +89,7 @@ class Story extends Equatable {
         responseCount: json['responseCount'],
         totalReactions: json['totalReactions'],
         author: json['author']['username'],
-        hostname: Uri.tryParse(json['author']['publicationDomain'] ?? '')?.host,
+        hostname: json['author']['publicationDomain'],
         slug: json['slug'],
       );
 }

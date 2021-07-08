@@ -1,11 +1,15 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hashnode/core/providers/settings.dart';
-import 'package:hashnode/presentation/ui/pages/about/about_page.dart';
+import 'package:hashnode/core/models/story.dart';
 import 'package:hashnode/presentation/ui/pages/story/story_query.dart';
 import 'package:hashnode/presentation/ui/pages/story/widgets/widgets.dart';
 import 'package:hashnode/presentation/ui/pages/story_detail/story_detail_page.dart';
-import 'package:provider/provider.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:routemaster/routemaster.dart';
+import 'package:provider/provider.dart';
 
 class StoryPage extends StatefulWidget {
   final StoryListType listType;
@@ -23,11 +27,32 @@ class StoryPage extends StatefulWidget {
   @visibleForTesting
   static const refreshIndicatorKey =
       ValueKey('story_page_refresh_indicator_key');
+
+  static _InheritedPageState of(BuildContext context) =>
+      (context.dependOnInheritedWidgetOfExactType<_InheritedPageState>()
+          as _InheritedPageState);
 }
 
 class _StoryPageState extends State<StoryPage> {
-  bool isFetchingMore = false;
-  int nextPage = 2;
+  bool _isFetchingMore = false;
+  int _nextPage = 2;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final deviceType = context.read<DeviceScreenType>();
+
+    if (deviceType == DeviceScreenType.mobile) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        final queryParameters = RouteData.of(context).queryParameters;
+        if (!queryParameters.containsKey('slug')) return;
+
+        Routemaster.of(context).push('/story',
+            queryParameters: RouteData.of(context).queryParameters);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,51 +61,137 @@ class _StoryPageState extends State<StoryPage> {
       body: StoryQuery(
         listType: widget.listType,
         builder: (context, stories, {refetch, fetchMore}) {
-          return RefreshIndicator(
-            key: StoryPage.refreshIndicatorKey,
+          return _InheritedPageState(
+            stories: stories,
+            onFetchMore: _handleFetchMore(fetchMore: fetchMore),
+            onStoryTap: _handleStoryTap,
+            onRefresh: _handleRefresh(refetch: refetch),
+            isFetchingMore: _isFetchingMore,
+            child: ScreenTypeLayout.builder(
+              mobile: (context) => MobileView(),
+              desktop: (context) => DesktopView(),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> Function() _handleRefresh(
+      {Future<QueryResult?> Function()? refetch}) {
+    return () => Future.delayed(Duration(seconds: 1), refetch);
+  }
+
+  Future<void> Function() _handleFetchMore(
+      {dynamic Function(FetchMoreOptions)? fetchMore}) {
+    return () async {
+      final options = buildFetchMoreOpts(page: _nextPage);
+      setState(() {
+        _isFetchingMore = true;
+      });
+
+      await fetchMore!(options);
+
+      setState(() {
+        _isFetchingMore = false;
+        _nextPage = _nextPage + 2;
+      });
+    };
+  }
+
+  void _handleStoryTap(Story story) {
+    var deviceType = getDeviceType(MediaQuery.of(context).size);
+    final hostname = (story.hostname?.isEmpty ?? true)
+        ? '${story.author}.hashnode.dev'
+        : story.hostname!;
+    final queryParams = {"slug": story.slug!, "hostname": hostname}
+      ..removeWhere((key, value) => value.isEmpty);
+
+    if (deviceType == DeviceScreenType.mobile) {
+      Routemaster.of(context).push('/story', queryParameters: queryParams);
+    } else {
+      final listType = describeEnum(widget.listType);
+      Routemaster.of(context)
+          .push('/stories/$listType', queryParameters: queryParams);
+    }
+  }
+}
+
+class MobileView extends StatelessWidget {
+  const MobileView({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final state = StoryPage.of(context);
+
+    return RefreshIndicator(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: StoryList(
+              stories: state.stories,
+              isFetchingMore: state.isFetchingMore,
+              onFetchMore: state.onFetchMore,
+              onStoryTap: state.onStoryTap,
+            ),
+          ),
+        ],
+      ),
+      onRefresh: state.onRefresh,
+    );
+  }
+}
+
+class DesktopView extends StatelessWidget {
+  const DesktopView({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final state = StoryPage.of(context);
+    final queryParams = RouteData.of(context).queryParameters;
+
+    final slug = queryParams['slug'];
+    final hostname = queryParams['hostname'];
+
+    return Row(
+      children: [
+        SizedBox(
+          width: 350,
+          child: RefreshIndicator(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Expanded(
                   child: StoryList(
-                    stories: stories,
-                    isFetchingMore: isFetchingMore,
-                    onFetchMore: () async {
-                      final options = buildFetchMoreOpts(page: nextPage);
-                      setState(() {
-                        isFetchingMore = true;
-                      });
-
-                      await fetchMore!(options);
-
-                      setState(() {
-                        isFetchingMore = false;
-                        nextPage = nextPage + 2;
-                      });
-                    },
-                    onStoryTap: (story) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return StoryDetailPage(
-                              slug: story.slug,
-                              hostname: story.hostname,
-                            );
-                          },
-                        ),
-                      );
-                    },
+                    stories: state.stories,
+                    isFetchingMore: state.isFetchingMore,
+                    onFetchMore: state.onFetchMore,
+                    onStoryTap: state.onStoryTap,
                   ),
                 ),
               ],
             ),
-            onRefresh: () async =>
-                Future.delayed(Duration(seconds: 1), refetch),
-          );
-        },
-      ),
+            onRefresh: state.onRefresh,
+          ),
+        ),
+        Expanded(
+          child: slug == null
+              ? Container(
+                  color: Colors.white,
+                )
+              : StoryDetailPage(
+                  slug: slug,
+                  hostname: hostname,
+                ),
+        ),
+      ],
     );
   }
 }
@@ -108,110 +219,23 @@ FetchMoreOptions buildFetchMoreOpts({page = 2}) {
   return options;
 }
 
-@visibleForTesting
-class StoryPageHeader extends StatelessWidget implements PreferredSizeWidget {
-  const StoryPageHeader({Key? key, required this.title}) : super(key: key);
+class _InheritedPageState extends InheritedWidget {
+  _InheritedPageState({
+    Key? key,
+    required Widget child,
+    required this.isFetchingMore,
+    required this.onFetchMore,
+    required this.onStoryTap,
+    required this.onRefresh,
+    required this.stories,
+  }) : super(key: key, child: child);
 
-  final String title;
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(title),
-      leading: Consumer<Settings>(
-        builder: (context, settings, _) {
-          return IconButton(
-            key: themeButtonKey,
-            icon: Image(
-              image: settings.theme == AppTheme.dark
-                  ? AssetImage('images/hashnode_light_32.png')
-                  : AssetImage('images/hashnode_dark_32.png'),
-            ),
-            onPressed: () => settings.toggleTheme(),
-          );
-        },
-      ),
-      actions: <Widget>[SettingsMenuButton()],
-      elevation: 0.0,
-    );
-  }
-
-  @visibleForTesting
-  static const themeButtonKey = ValueKey('story_list_header_theme_button_key');
-}
-
-@visibleForTesting
-class SettingsMenuButton extends StatelessWidget {
-  const SettingsMenuButton({Key? key}) : super(key: key);
+  final bool isFetchingMore;
+  final VoidCallback? onFetchMore;
+  final OnStoryTapFn onStoryTap;
+  final Future<void> Function() onRefresh;
+  final List<Story> stories;
 
   @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton(
-      onSelected: (dynamic value) {
-        if (value is AppTheme) {
-          context.read<Settings>().toggleTheme();
-        }
-
-        if (value is DisplayDensity) {
-          context.read<Settings>().setDisplayDensity(value);
-        }
-
-        if (value == 'about') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return AboutPage();
-              },
-            ),
-          );
-        }
-      },
-      itemBuilder: (context) {
-        final settings = context.read<Settings>();
-        final themeText = settings.theme == AppTheme.dark
-            ? "Disable dark mode"
-            : "Enable dark mode";
-
-        final displayDensity = settings.displayDensity;
-        final isDisplayComfortable =
-            displayDensity == DisplayDensity.comfortable;
-        final displayDensityText = isDisplayComfortable
-            ? 'Enable compact mode'
-            : 'Disable compact mode';
-
-        return [
-          PopupMenuItem<AppTheme>(
-            key: themeButtonKey,
-            value: settings.theme,
-            child: Text(themeText),
-          ),
-          PopupMenuItem<DisplayDensity>(
-            key: displayButtonKey,
-            value: isDisplayComfortable
-                ? DisplayDensity.compact
-                : DisplayDensity.comfortable,
-            child: Text(displayDensityText),
-          ),
-          PopupMenuItem<String>(
-            key: aboutButtonKey,
-            value: 'about',
-            child: Text('About'),
-          ),
-        ];
-      },
-    );
-  }
-
-  @visibleForTesting
-  static const themeButtonKey = ValueKey('settings_theme_button_key');
-
-  @visibleForTesting
-  static const displayButtonKey = ValueKey('settings_display_button_key');
-
-  @visibleForTesting
-  static const aboutButtonKey = ValueKey('settings_about_button_key');
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => true;
 }

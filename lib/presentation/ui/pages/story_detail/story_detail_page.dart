@@ -3,10 +3,19 @@ import 'package:hashnode/presentation/ui/pages/story_detail/story_detail_query.d
 import 'package:hashnode/presentation/ui/pages/story_detail/widgets/widgets.dart';
 
 class StoryDetailPage extends StatelessWidget {
+  StoryDetailPage({required this.slug, this.hostname});
+
+  static Route<dynamic> route(String? slug, String? hostname) {
+    return MaterialPageRoute<dynamic>(builder: (context) {
+      return StoryDetailPage(
+        slug: slug,
+        hostname: hostname,
+      );
+    });
+  }
+
   final String? slug;
   final String? hostname;
-
-  StoryDetailPage({required this.slug, this.hostname});
 
   @override
   Widget build(BuildContext context) {
